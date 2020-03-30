@@ -36,7 +36,7 @@ export default {
   props,
   mounted() {
    d3.select('#' + this.id).style('top', this.top + 'px')
-   console.log(d3.select('#' + this.id))
+   //console.log(d3.select('#' + this.id))
   },
 
 }
@@ -74,7 +74,7 @@ export default {
 
     border-bottom: 1px solid rgba(255,255,255,0.5);
     position: absolute;
-    width:51%;
+    width:100px;
     height: 120%;
     top: 30px;
   

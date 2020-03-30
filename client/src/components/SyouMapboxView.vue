@@ -182,7 +182,7 @@ export default {
             }
             
         });
-        /*
+        
         this.map.addLayer({
             "id": "cells-text",
             "type": "symbol",
@@ -198,9 +198,10 @@ export default {
             "paint": {
                 "text-color": '#fff',
               
-            }
+            },
+            minzoom: 10,
         });
-        */
+      
         this.map.on('click', 'wubai-circle', function (e) {
           new mapboxgl.Popup()
               .setLngLat(e.lngLat)

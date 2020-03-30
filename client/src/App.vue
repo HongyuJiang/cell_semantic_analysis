@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <div class="float-layer left-float-layer">
-       <fixed-attr-indicator class="fixed-attrs" name='兰咩咩的小穴'/>
+       <fixed-attr-indicator class="fixed-attrs" name='基于基站轨迹的城市移动模式分析系统'/>
        <dynamic-attr-indicator 
-          name=抽插次数
-          value=1303
+          name=基站数量
+          value=9987
           top=130
           id = xiaqu
           class="dynamic-attrs"
@@ -13,6 +13,8 @@
     </div>
 
     <syou-mapbox-view class="mapbox-view"/>
+
+    <topic-view />
 
     <div class="float-layer right-float-layer">
 
@@ -32,6 +34,7 @@ import FixedAttrIndicator from './components/FixedAttrIndicator';
 import DynamicAttrIndicator from './components/DynamicAttrIndicator';
 import ChordView from './components/SyouChordView';
 import MatView from './components/SyouMatView';
+import TopicView from './components/SyouTopicView';
 import DataProvider from './DataProvider';
 
 export default {
@@ -41,7 +44,8 @@ export default {
     FixedAttrIndicator,
     DynamicAttrIndicator,
     ChordView,
-    MatView
+    MatView,
+    TopicView
   },
   data () {
     return {

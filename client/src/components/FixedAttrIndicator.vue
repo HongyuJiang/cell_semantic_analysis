@@ -9,7 +9,7 @@ export default {
   name: 'fixed-attrs',
   data() {
     return {
-      checkedNames: '兰咩咩的小穴'
+      checkedNames: '基于基站轨迹的城市移动模式分析系统'
     };
   },
   

@@ -29,16 +29,12 @@ export default {
 
         let heatScale = d3.scaleLinear().domain([data_min, data_max]).range([1,0])
 
-        let rect_size = [30, 11]
+        let rect_size = [(this.width) / 8, (this.height) / 26]
 
         const svg = d3.select("#mat-view").append('svg')
-           // .attr("viewBox", [-this.width / 2, -this.height / 2, this.width, this.height])
-            .attr('width', 300)
-            .attr('height', 350)
+            .attr("viewBox", [-50, -50, this.width + 50, this.height + 50])
             .attr("font-size", 16)
             .attr("font-family", "sans-serif")
-            .append('g')
-            .attr('transform','translate(50,20)')
 
         let groups = svg.selectAll('rect_group')
         .data(mat_data)
@@ -57,15 +53,15 @@ export default {
         })
         .attr('width', rect_size[0])
         .attr('height', rect_size[1])
-        .attr('fill-opacity', 0.99)
+        .attr('fill-opacity', 0.8)
         .attr('fill', d => d3.interpolateSpectral(heatScale(d)))
-        .attr('stroke','black')
-        .attr('stroke-width','1')
+        .attr('stroke','rgb(8,15,27)')
+        .attr('stroke-width','2')
 
         let xScale = d3.scaleLinear().domain([1,7]).range([0,rect_size[0]*7])
 
         const xAxisContainer = svg.append("g")
-        .attr("transform", `translate(0,270)`);
+        .attr("transform", `translate(0,` + (this.height - 20) + `)`);
 
         const xAxis = d3.axisBottom(xScale)
         .ticks(7)
@@ -78,7 +74,7 @@ export default {
         let yScale = d3.scaleLinear().domain([1,24]).range([0,rect_size[1] * 24])
 
         const yAxisContainer = svg.append("g")
-        .attr("transform", `translate(-10,0)`);
+        .attr("transform", `translate( ` + -20 + `,0)`);
 
         const yAxis = d3.axisLeft(yScale)
         .ticks(24)
@@ -97,9 +93,8 @@ export default {
       .style('top', '500px')
       .style('left', '50px')
 
-    this.width = 640
-    this.height = 640
-
+    this.width = 340
+    this.height = 340
 
     let that = this
 
@@ -119,8 +114,8 @@ export default {
 
 <style scoped>
 #mat-view-container{
-  width:70%;
-  height:600px;
+  width:80%;
+  height:40%;
 }
 
 </style>
