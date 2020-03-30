@@ -1,16 +1,17 @@
 import axios from 'axios';
 
 export default class DataProvider {
-    static getCountyJson() {
+    static getCellInfo() {
 
-        return axios.get('http://localhost:3001/regions');
+        return axios.get('/static/cell_info.json');
     }
     static getRegionJson() {
 
         return axios.get('https://raw.githubusercontent.com/longwosion/geojson-map-china/master/geometryCouties/510700.json');
     }
-    static getItemGroupCsv() {
+    static getCellFeatures() {
 
-        return axios.get('http://localhost:3001/groupitem');
+        return axios.get('/static/cell_features.json');
     }
+
 }

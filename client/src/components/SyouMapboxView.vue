@@ -39,8 +39,8 @@ export default {
             "fill-color": "#fff",
             "fill-opacity": 0.1
         },
-        minzoom: 7,
-        maxzoom: 10,
+        minzoom: 5,
+        maxzoom: 20,
       });
 
       this.map.addLayer({
@@ -51,8 +51,8 @@ export default {
             'line-width': 1.5,
             'line-color': "black",
         },
-        minzoom: 7,
-        maxzoom: 10,
+        minzoom: 5,
+        maxzoom: 20,
       });
 
       this.map.addLayer({
@@ -70,61 +70,9 @@ export default {
         }
     });
     },
-     addCounty2Map(features){
-
-      this.map.addSource("town_json", {
-        "type": "geojson",
-        "data": {
-            "type": "FeatureCollection",
-            "features": features.features
-        },
-      })
-
-      this.map.addLayer({
-        "id": "county-overlay",
-        "type": "fill",
-        "source": "town_json",
-        "paint": {
-            "fill-color": "#fff",
-            "fill-opacity": 0.1
-        },
-        minzoom: 10,
-        maxzoom: 20,
-      });
-
-      
-      this.map.addLayer({
-        "id": "county-outline",
-        "type": "line",
-        "source": "town_json",
-        "paint": {
-            'line-width': 1,
-            'line-color': "#000",
-            'line-opacity': 1,
-        },
-        minzoom: 9,
-        maxzoom: 20,
-      });
-
-
-      this.map.addLayer({
-          "id": "county-label",
-          "type": "symbol",
-          "source": "town_json",
-          "layout": {
-            "text-field": "{name}",
-            "text-size": 12,
-          },
-          "paint": {
-            "text-color": '#fff'
-          },
-          minzoom: 9,
-          maxzoom: 20,
-      });
-    },
     
     mapInit(that){
-      mapboxgl.accessToken = 'pk.eyJ1IjoiaG9uZ3l1amlhbmciLCJhIjoiY2o1Y2VldHpuMDlyNTJxbzh5dmx2enVzNCJ9.y40wPiYB9y6qJE6H4PrzDw';
+      mapboxgl.accessToken = 'pk.eyJ1IjoiaG9uZ3l1amlhbmciLCJhIjoiY2s3N202NDIxMDhkdzNpcGg3djRtdnN4dCJ9.lysys8PBG25SxeHRF-sPvA';
       this.map = new mapboxgl.Map({
           container: 'map', // container id
           style: 'mapbox://styles/hongyujiang/cjl1ya0sn4m0m2sqj0pbkuqor', // stylesheet location
@@ -135,58 +83,28 @@ export default {
     },
     mapLoadGeojson(that){
 
-    this.map.on('load', function(){
+      this.map.on('load', function(){
 
-           DataProvider.getRegionJson().then(response => {
+          DataProvider.getRegionJson().then(response => {
               
-                that.data = response.data;
-                that.addRegion2Map(that.data)
+              that.data = response.data;
+              that.addRegion2Map(that.data)
 
               }, error => {
                 that.loading = false;
-            });
+          });
 
-            DataProvider.getCountyJson().then(response => {
+          DataProvider.getCellInfo().then(response => {
+
+            let cell_info = response.data
+            that.mapAddCircle(cell_info)
+          
+            }, error => {
               
-                that.data = response.data;
-                that.addCounty2Map(that.data)
+              that.loading = false;
+          });
 
-              }, error => {
-                that.loading = false;
-            });
-
-            that.mapAddCircle(that)
-    
       })
-    },
-    mapAddDIYIcon(that){
-
-        that.map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Cat_silhouette.svg/400px-Cat_silhouette.svg.png', function(error, image) {
-        if (error) throw error;
-        that.map.addImage('cat', image);
-        that.map.addLayer({
-            "id": "wudu",
-            "type": "symbol",
-            "source": {
-                "type": "geojson",
-                "data": {
-                    "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [104.862946,31.333467]
-                        }
-                    }]
-                }
-            },
-            "layout": {
-                "icon-image": "cat",
-                "icon-size": 0.25,
-            
-            }
-        });
-    });
     },
 
     mapAddIcon(that){
@@ -214,44 +132,61 @@ export default {
         });
     },
 
-    mapAddCircle(that){
+    mapAddCircle(data){
 
-        that.map.addSource("wubai", {
+      let points = []
+
+      data.forEach(d => {
+
+        //2 > 3, 3 > 0.9, 4 > 2, 
+
+        if(d.score[5] > 1){
+
+          let meta = {}
+          meta['properties'] = {}
+          if(d.name.split('_').length > 1) d.name = d.name.split('_')[1]
+          meta['properties']['name'] = d.name
+          meta['properties']['weight'] = d.score[5] * 3
+          meta['type'] = 'Feature'
+          meta['geometry'] = {}
+          meta['geometry']['type'] = 'Point'
+          meta['geometry']['coordinates'] = [d.lon, d.lat]
+
+          points.push(meta)
+        }
+      })
+
+        this.map.addSource("cells", {
           "type": "geojson",
           "data": {
               "type": "FeatureCollection",
-              "features": [{
-                  "properties":{
-                      "name":"五柏村",
-                  },
-                  "type": "Feature",
-                  "geometry": {
-                    "type": "Point",
-                    "coordinates": [104.862946,31.333467]
-                  }
-              }]
+              "features": points
            }
         })
       
-        that.map.addLayer({
-            "id": "wubai-circle",
+        this.map.addLayer({
+            "id": "cells-circle",
             "type": "circle",
-            "source": 'wubai',
+            "source": 'cells',
             'paint': {
-                // make circles larger as the user zooms from z12 to z22
-                'circle-radius': 7,
-                'circle-color': '#FCE246',
-                "circle-stroke-width": 3,
-                "circle-stroke-color": "#FE7F2D"
+                'circle-radius': [
+                  'interpolate', ['linear'], ['zoom'],
+                  10, 2,
+                  12, ['*', ['get', 'weight'], 1],
+                  15, ['*', ['get', 'weight'], 3],
+                ],
+                'circle-color': '#FE7F2D',
+                "circle-stroke-width": 0,
+                "circle-stroke-color": "#fff"
              
             }
             
         });
-
-        that.map.addLayer({
-            "id": "wubai-text",
+        /*
+        this.map.addLayer({
+            "id": "cells-text",
             "type": "symbol",
-            "source": 'wubai',
+            "source": 'cells',
              layout: {
               "text-field": "{name}",
              // "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
@@ -265,8 +200,8 @@ export default {
               
             }
         });
-
-        that.map.on('click', 'wubai-circle', function (e) {
+        */
+        this.map.on('click', 'wubai-circle', function (e) {
           new mapboxgl.Popup()
               .setLngLat(e.lngLat)
               .setHTML(e.features[0].properties.name)

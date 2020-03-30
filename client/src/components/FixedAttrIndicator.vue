@@ -9,7 +9,7 @@ export default {
   name: 'fixed-attrs',
   data() {
     return {
-      checkedNames: '芦溪镇五柏村'
+      checkedNames: '兰咩咩的小穴'
     };
   },
   

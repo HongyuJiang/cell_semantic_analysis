@@ -48,7 +48,7 @@ export default {
 .container{
 
     position: absolute;
-    width:51%;
+    width:71%;
     height: 3%;
     left: 50px
 }
@@ -57,7 +57,7 @@ export default {
 
     border-left: 2px solid #F0B04D;
     position: absolute;
-    width:31%;
+    width:200px;
     height: 80%;
     padding-left:10px;
   
@@ -72,11 +72,11 @@ export default {
 
 .index_value{
 
-    border-bottom: 1px solid rgba(255,255,255,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.5);
     position: absolute;
     width:51%;
-    height: 100%;
-    top: 40px;
+    height: 120%;
+    top: 30px;
   
 }
 
