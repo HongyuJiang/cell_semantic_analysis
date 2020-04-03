@@ -1,7 +1,7 @@
 <template>
 
   <div id='chord-view-container'>
-    <div class='name'>Transfer relations bettween topics</div>
+    <div class='name'>基站主题之间转移关系</div>
       <div id='chord-view'>
    
       </div>
@@ -131,7 +131,7 @@ export default {
 }
 
 .name{
-
+  font-family: 'Microsoft Yahei Light';
   border-left: lightsalmon solid 3px;
   color:white;
   padding-left:10px;

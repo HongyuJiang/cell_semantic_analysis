@@ -9,13 +9,15 @@
           id = xiaqu
           class="dynamic-attrs"
         />
+
+        <cell-list />
     
     </div>
 
     <syou-mapbox-view class="mapbox-view"/>
 
     <topic-view />
-    <cell-list />
+    
 
     <div class="float-layer right-float-layer">
 

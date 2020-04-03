@@ -11,6 +11,17 @@
 import * as d3 from 'd3';
 import DataProvider from '../DataProvider';
 
+let transfer_data = [
+    [ 2.6697, 0,       0.9137, 0,       1.2648, -0.1355],
+    [ 0,      5.4090,  0,      1.6314,  0,      -0.1002],
+    [ 0.913,  0,       4.1905, 0,       2.3152, 0.2634],
+    [ 0,      1.6359,  0,      2.828,   -0.950, 0.4847],
+    [ 1.2650, 0,       2.3121, -0.9511, 4.3240, 0.2685],
+    [-0.1336, -0.0973, 0.2625, 0.4856,  0.2665, 1.682]
+]
+
+let colors = ["#FF6600","#FFD443", "#FF6361", "#484C7F", "#BABEEA", "#E2ECF2"]
+
 export default {
   name:'topic-view',
   data () {
@@ -37,28 +48,39 @@ export default {
         })
 
         let outerCircleColor = 'grey'
-        let innerCircleColor = '#FFaa00'
-        let starsColor = 'steelblue'
+        let innerCircleColor = '#8afd99'
+        let starsColor = '#8afd99'
 
-        /*
-        
-        groups.append('rect')
-        .attr('width', outerRadius * 3.6)
-        .attr('height', outerRadius * 3.3)
-        .attr('rx', 10)
-        .attr('fill', 'rgba(255,255,255,0.1)')
-        .attr('x', -outerRadius * 1.8)
-        .attr('y', -outerRadius * 2)
-        */
+       let proportions = []
+
+       for(let i=0;i < transfer_data.length;i++){
+
+         let group1 = 0
+
+         for(let j=0;j < transfer_data[i].length;j++){
+
+           if(i != j){
+             group1 += transfer_data[i][j]
+           }
+         }
+
+         let proportion = group1 / (group1 + transfer_data[i][i])
+
+         proportions.push(proportion)
+       }
 
         groups.append('circle')
         .attr('r', outerRadius)
         .attr('fill',outerCircleColor)
+        .attr('opacity',0.5)
         .attr('cx', 0)
         .attr('cy', 0)
 
         groups.append('circle')
-        .attr('r', outerRadius  / 2 * Math.random() + outerRadius / 4)
+        .attr('r',  function(d,i){
+
+          return outerRadius * proportions[i]
+        })
         .attr('fill',innerCircleColor)
         //.attr('stroke','black')
         .attr('opacity', 1)
@@ -96,7 +118,10 @@ export default {
 
         groups.append('rect')
         .attr('opacity', 0)
-        .attr('fill', '#FF3300')
+        .attr('fill', function(d,i){
+
+          return colors[i]
+        })
         .attr('width', 40)
         .attr('height', 2)
         .attr('x', -20)
@@ -116,6 +141,7 @@ export default {
         })
         .attr('r', d => d / 20)
         .attr('fill',starsColor)
+        .attr('opacity',0.5)
     }   
   },
   mounted(){
@@ -127,7 +153,7 @@ export default {
     d3.select('#' + 'topic-view-container')
       .style('position', 'absolute')
       .style('top', '30px')
-      .style('left', '34%')
+      .style('left', '32%')
       .style('width', this.width + 'px')
       .style('height', this.height + 'px')
 

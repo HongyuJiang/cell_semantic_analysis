@@ -1,7 +1,7 @@
 <template>
 
   <div id='mat-view-container'>
-      <div class='name'>Heat matrix of cells</div>
+      <div class='name'>基站访问热度日历图</div>
       <div id='mat-view'>
    
       </div>
@@ -185,7 +185,7 @@ export default {
 }
 
 .name{
-
+  font-family: 'Microsoft Yahei Light';
   border-left: lightsalmon solid 3px;
   color:white;
   padding-left:10px;

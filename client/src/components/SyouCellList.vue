@@ -2,7 +2,6 @@
 
   <div id='cell-list-container'>
       <div id='cell-list'>
-   
       </div>
   </div>
 </template>
@@ -10,6 +9,8 @@
 
 import * as d3 from 'd3';
 import DataProvider from '../DataProvider';
+
+let colors = ["#FF6600","#FFD443", "#FF6361", "#484C7F", "#BABEEA", "#E2ECF2"]
 
 
 export default {
@@ -32,18 +33,23 @@ export default {
                 return b.score[i] - a.score[i]
             })
 
-            let filter_list = []
+            let filter_list = []    
 
             temp_list.forEach(d=>{
 
-                if(that.indexOfMax(d.score) == i)
+                let topic = that.indexOfMax(d.score)
+
+                if(topic == i){
+                    d.topic = topic
                     filter_list.push(d)
+                }
+                    
             })
 
             topic_list.push(filter_list.slice(0,3))
-        }
 
-        console.log(topic_list)
+            that.$root.$emit('addTopicCell', filter_list[0]) 
+        }
 
         d3.select("#cell-list").select('svg').remove()
 
@@ -57,22 +63,17 @@ export default {
         .enter()
         .append('g')
         .attr('transform', function(d,i){
-
             return 'translate(0' + ',' + (i * 80) + ')' 
         })
 
-        topic_group.selectAll('cell_circle')
-        .data(d => d)
-        .enter()
-        .append('circle')
-        .attr('r', 5)
-        .attr('cx', 0)
-        .attr('cy', function(d,i){
-            return i * 20 - 4
-        })
-        .attr('fill', function(d){
+        topic_group.append('rect')
+        .attr('x', 0)
+        .attr('y', -15)
+        .attr('width', 10)
+        .attr('height', 60)
+        .attr('fill', function(d,i){
 
-            return accent(d.topic)
+            return colors[i]
         })
 
         topic_group.selectAll('cell_name')
@@ -80,17 +81,22 @@ export default {
         .enter()
         .append('text')
         .attr('fill','white')
-        .attr('x', 10)
+        .attr('x', 20)
         .attr('y', function(d,i){
             return i * 20
         })
         .attr('font-size', 13)
         .attr('font-family','Microsoft Yahei Light')
+        .on('click', function(d){
+
+            that.$root.$emit('addMarker', d)
+        })
         .text(function(d){
 
             if(d.name.split('_').length > 1) return d.name.split('_')[1].replace('1800','')
             return d.name
         })
+        
 
     },
     indexOfMax(arr) {
@@ -109,6 +115,20 @@ export default {
         }
 
         return maxIndex;
+    },
+    update(){
+
+        let that = this
+
+        DataProvider.getCellInfo().then(response => {
+                
+            that.data = response.data;
+
+            that.chartInit(that.data)
+
+            }, error => {
+                that.loading = false;
+        });
     }
   },
   mounted(){
@@ -121,17 +141,9 @@ export default {
     this.width = 340
     this.height = 640
 
-    let that = this
-
-    DataProvider.getCellInfo().then(response => {
-              
-        that.data = response.data;
-
-        that.chartInit(that.data)
-
-        }, error => {
-            that.loading = false;
-    });
+    this.$root.$on('updateCellList', d => {
+      this.update()
+    })
 
   },
 }
@@ -139,7 +151,7 @@ export default {
 
 <style scoped>
 #cell-list-container{
-  width:20%;
+  width:80%;
   height:50%;
 }
 
