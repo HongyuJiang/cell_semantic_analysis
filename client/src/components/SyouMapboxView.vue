@@ -14,8 +14,9 @@ export default {
     this.mapInit(this);
     this.mapLoadGeojson(this);
 
-    this.$root.$on('addAIcon', () => {
-      this.mapAddIcon()
+    this.$root.$on('updateMapTopic', topic => {
+            // your code goes here
+      this.mapAddCircle(this.cell_info, topic)
     })
 
   },
@@ -37,7 +38,7 @@ export default {
         "source": "region_json",
         "paint": {
             "fill-color": "#fff",
-            "fill-opacity": 0.1
+            "fill-opacity": 0.15
         },
         minzoom: 5,
         maxzoom: 20,
@@ -95,9 +96,11 @@ export default {
           });
 
           DataProvider.getCellInfo().then(response => {
-
-            let cell_info = response.data
-            that.mapAddCircle(cell_info)
+          
+            let cell_info = response.data 
+            that.cell_info = cell_info
+            that.mapAddCircle(cell_info, 5)
+            that.mapAddHeatmap()
           
             }, error => {
               
@@ -107,40 +110,22 @@ export default {
       })
     },
 
-    mapAddIcon(that){
-
-        that.map.addLayer({
-            "id": "wudu",
-            "type": "symbol",
-            "source": {
-                "type": "geojson",
-                "data": {
-                    "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [104.862946,31.333467]
-                        }
-                    }]
-                }
-            },
-            "layout": {
-                "icon-image": "marker-15",
-                "icon-size": 1
-            }
-        });
-    },
-
-    mapAddCircle(data){
+    mapAddCircle(data, index){
 
       let points = []
 
       data.forEach(d => {
 
         //2 > 3, 3 > 0.9, 4 > 2, 
+        let threshold = 1.5
 
-        if(d.score[5] > 1){
+        if (index == 0) threshold = 3
+        else if (index == 1) threshold = 0
+        else if (index == 2) threshold = 3
+        else if (index == 3) threshold = 0.4
+        else if (index == 4) threshold = 4
+
+        if(d.score[index] > threshold){
 
           let meta = {}
           meta['properties'] = {}
@@ -156,6 +141,15 @@ export default {
         }
       })
 
+      if(this.map.getSource('cells') != null){
+
+        this.map.getSource('cells').setData({
+              "type": "FeatureCollection",
+              "features": points
+        })  
+      }
+      else{
+
         this.map.addSource("cells", {
           "type": "geojson",
           "data": {
@@ -163,24 +157,24 @@ export default {
               "features": points
            }
         })
-      
-        this.map.addLayer({
+
+         this.map.addLayer({
             "id": "cells-circle",
             "type": "circle",
             "source": 'cells',
             'paint': {
                 'circle-radius': [
                   'interpolate', ['linear'], ['zoom'],
-                  10, 2,
+                  10, 1,
                   12, ['*', ['get', 'weight'], 1],
-                  15, ['*', ['get', 'weight'], 3],
+                  13, ['*', ['get', 'weight'], 1.5],
                 ],
-                'circle-color': '#FE7F2D',
+                'circle-color': '#ccc',
                 "circle-stroke-width": 0,
                 "circle-stroke-color": "#fff"
              
-            }
-            
+            },
+            //minzoom: 10,
         });
         
         this.map.addLayer({
@@ -199,9 +193,10 @@ export default {
                 "text-color": '#fff',
               
             },
-            minzoom: 10,
+            minzoom: 12,
         });
       
+      }
         this.map.on('click', 'wubai-circle', function (e) {
           new mapboxgl.Popup()
               .setLngLat(e.lngLat)
@@ -210,6 +205,84 @@ export default {
         });
 
     },
+
+    mapAddHeatmap(){
+
+      this.map.addLayer(
+        {
+        'id': 'cells-heat',
+        'type': 'heatmap',
+        'source': 'cells',
+        'maxzoom': 12,
+        'paint': {
+        // Increase the heatmap weight based on frequency and property magnitude
+          'heatmap-weight': [
+          'interpolate',
+          ['linear'],
+          ['get', 'count'],
+          8,
+          1,
+          12,
+          2
+        ],
+        // Increase the heatmap color weight weight by zoom level
+        // heatmap-intensity is a multiplier on top of heatmap-weight
+        'heatmap-intensity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        8,
+        0.5,
+        12,
+        1
+        ],
+        // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+        // Begin color ramp at 0-stop with a 0-transparancy color
+        // to create a blur-like effect.
+        'heatmap-color': [
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0,
+        'rgba(33,102,172,0)',
+        0.2,
+        'rgb(103,169,207)',
+        0.4,
+        'rgb(209,229,240)',
+        0.6,
+        'rgb(253,219,199)',
+        0.8,
+        'rgb(239,138,98)',
+        1,
+        'rgb(178,24,43)'
+        ],
+        // Adjust the heatmap radius by zoom level
+        'heatmap-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        5,
+        8,
+        8,
+        15,
+        10,
+        20
+        ],
+        // Transition from heatmap to circle layer by zoom level
+        'heatmap-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        9,
+        1,
+        11,
+        0
+        ]
+        }
+        },
+        'waterway-label'
+        );
+    }
 
   },
 

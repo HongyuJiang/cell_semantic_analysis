@@ -15,6 +15,7 @@
     <syou-mapbox-view class="mapbox-view"/>
 
     <topic-view />
+    <cell-list />
 
     <div class="float-layer right-float-layer">
 
@@ -35,6 +36,7 @@ import DynamicAttrIndicator from './components/DynamicAttrIndicator';
 import ChordView from './components/SyouChordView';
 import MatView from './components/SyouMatView';
 import TopicView from './components/SyouTopicView';
+import CellList from './components/SyouCellList';
 import DataProvider from './DataProvider';
 
 export default {
@@ -45,7 +47,8 @@ export default {
     DynamicAttrIndicator,
     ChordView,
     MatView,
-    TopicView
+    TopicView,
+    CellList
   },
   data () {
     return {
@@ -66,7 +69,7 @@ export default {
 .float-layer {
   position: absolute;
   z-index:999;
-  width:25%;
+  width:27%;
   height:100%;
 
 }

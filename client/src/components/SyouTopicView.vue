@@ -19,49 +19,88 @@ export default {
   methods:{
     chartInit(data){
 
-        let rect_size = [(this.width) / 8, (this.height) / 26]
+        let outerRadius = this.height / 5
 
-        console.log(data)
+        let that = this
 
         const svg = d3.select("#topic-view").append('svg')
             .attr("viewBox", [0, 0, this.width, this.height])
             .attr("font-size", 16)
             .attr("font-family", "sans-serif")
 
-        svg.append('rect')
-        .attr('width', this.width)
-        .attr('height', this.height)
-        .attr('fill','white')
-        .attr('opacity','0.2')
-
         let groups = svg.selectAll('g')
         .data(data)
         .enter()
         .append('g')
         .attr('transform', function(d,i){
-            return 'translate(' +　(i * 110 + 70) + ', 60)'
+            return 'translate(' +　(i *  (that.width / 6.2) + that.width / 12) + ', 60)'
         })
 
+        let outerCircleColor = 'grey'
+        let innerCircleColor = '#FFaa00'
+        let starsColor = 'steelblue'
+
+        /*
+        
+        groups.append('rect')
+        .attr('width', outerRadius * 3.6)
+        .attr('height', outerRadius * 3.3)
+        .attr('rx', 10)
+        .attr('fill', 'rgba(255,255,255,0.1)')
+        .attr('x', -outerRadius * 1.8)
+        .attr('y', -outerRadius * 2)
+        */
+
         groups.append('circle')
-        .attr('r', 20)
-        .attr('fill','orange')
+        .attr('r', outerRadius)
+        .attr('fill',outerCircleColor)
         .attr('cx', 0)
         .attr('cy', 0)
 
         groups.append('circle')
-        .attr('r', 10 * Math.random() + 5)
-        .attr('fill','#000')
+        .attr('r', outerRadius  / 2 * Math.random() + outerRadius / 4)
+        .attr('fill',innerCircleColor)
+        //.attr('stroke','black')
+        .attr('opacity', 1)
         .attr('cx', 0)
         .attr('cy', 0)
 
         groups.append('text')
-        .attr('fill','#fff')
-        .attr('y', 40)
+        .attr('fill', '#fff')
+        .attr('y', outerRadius * 2)
         .attr('text-anchor', 'middle')
-        .text(function(d,i){
-
-            return 'Topic ' + i
+        .style('font-size', 13)
+        .text(function(d, i){
+           return 'Topic ' + i
         })
+        .on('mouseover', function(d){
+
+          groups.selectAll('rect')
+          .transition()
+          .attr('opacity', function(q){
+            if(d.topic == q.topic) return 1
+            else return 0
+          })
+        })
+        .on('mouseout', function(d){
+
+          groups.selectAll('rect')
+          .transition()
+          .attr('opacity', 0)
+        })
+        .on('click', function(d){
+
+           that.$root.$emit('updateMapTopic', d.topic) 
+           that.$root.$emit('updateMatTopic', d.topic) 
+        })
+
+        groups.append('rect')
+        .attr('opacity', 0)
+        .attr('fill', '#FF3300')
+        .attr('width', 40)
+        .attr('height', 2)
+        .attr('x', -20)
+        .attr('y', 55)
 
         groups.selectAll('dayBall')
         .data(d => d.day)
@@ -69,26 +108,26 @@ export default {
         .append('circle')
         .attr('cx', function(d,i){
 
-            return 30 * Math.sin(i * (3.14 / 7) + 1)
+            return outerRadius * 1.5 * Math.sin(i * (3.14 / 7) + 1)
         })
         .attr('cy', function(d,i){
 
-            return 30 * Math.cos(i * (3.14 / 7) + 1)
+            return outerRadius * 1.5 * Math.cos(i * (3.14 / 7) + 1)
         })
         .attr('r', d => d / 20)
-        .attr('fill','#cc3300')
+        .attr('fill',starsColor)
     }   
   },
   mounted(){
 
-    this.width = 700
-    this.height = 120
+    this.width = document.documentElement.clientWidth / 2.5
+    this.height = this.width / 5
 
 
     d3.select('#' + 'topic-view-container')
       .style('position', 'absolute')
-      .style('top', '50px')
-      .style('left', '30%')
+      .style('top', '30px')
+      .style('left', '34%')
       .style('width', this.width + 'px')
       .style('height', this.height + 'px')
 

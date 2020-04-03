@@ -37,7 +37,7 @@ export default {
 
     top:50px;
     left:50px;
-    padding: 12px;
+    padding: 10px;
 
 }
 </style>

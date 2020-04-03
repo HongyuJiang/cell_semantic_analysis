@@ -1,6 +1,7 @@
 <template>
 
   <div id='chord-view-container'>
+    <div class='name'>Transfer relations bettween topics</div>
       <div id='chord-view'>
    
       </div>
@@ -48,26 +49,8 @@ export default {
             .attr("stroke", d => d3.rgb(this.color(d.index)))
             .attr("d", this.arc);
 
-        const groupTick = group.append("g")
-            .selectAll("g")
-            .data(d => this.groupTicks(d, 1e3))
-            .enter()
-            .append("g")
-            .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90}) translate(${this.outerRadius},0)`);
-
-        groupTick.append("line")
-            .attr("stroke", "#000")
-            .attr("x2", 6);
-
-        groupTick
-            .filter(d => d.value % 5e3 === 0)
-            .append("text")
-            .attr("x", 8)
-            .attr("dy", ".35em")
-            .attr("transform", d => d.angle > Math.PI ? "rotate(180) translate(-16)" : null)
-            .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
-            .attr('fill','white')
-            .text(d => this.formatValue(d.value));
+        const groupName = group.append("g")
+            .attr("transform", d => `rotate(${(d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90}) translate(${this.outerRadius - 50},0)`);
 
         svg.append("g")
             .attr("fill-opacity", 0.67)
@@ -81,13 +64,20 @@ export default {
             .attr("stroke", d => d3.rgb(this.color(d.target.index)))
             .attr('stroke-width', 0)
 
+        groupName
+            .append("text")
+            .attr("x", 8)
+            .attr("dy", ".35em")
+            .attr("text-anchor", "end")
+            .attr('fill','white')
+            .text(d => 'Topic ' + d.index)
     }
   },
   mounted(){
 
     d3.select('#' + 'chord-view-container')
       .style('position', 'absolute')
-      .style('top', '50px')
+      .style('top', '30px')
       .style('right', '30px')
 
     this.width = 640
@@ -138,6 +128,16 @@ export default {
 #chord-view-container{
   width:90%;
   height:600px;
+}
+
+.name{
+
+  border-left: lightsalmon solid 3px;
+  color:white;
+  padding-left:10px;
+  margin-right: 20px;
+  right:0px;
+  float: right;
 }
 
 </style>
