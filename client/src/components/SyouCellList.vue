@@ -87,7 +87,6 @@ export default {
             return i * 20
         })
         .attr('font-size', 13)
-        .attr('font-family','Microsoft Yahei Light')
         .on('click', function(d){
 
             that.$root.$emit('addMarker', d)
@@ -159,8 +158,8 @@ export default {
 
 <style scoped>
 #cell-list-container{
-  width:70%;
-  height:50%;
+  width:80%;
+  height:60%;
 }
 
 .name{

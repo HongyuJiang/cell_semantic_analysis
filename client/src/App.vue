@@ -84,6 +84,8 @@ export default {
 .right-float-layer{
 
   right:0px;
+  background:#F3F3F3;
+  border-left: #cc3300 2px solid
 }
 
 
@@ -92,7 +94,6 @@ body {
     padding:0;
     width:100%;
     height:100%;
-    font-family: 'Microsoft Yahei';
 }
 
 .chart-name{
@@ -117,6 +118,7 @@ body {
     float:left; 
     left:10px; 
     margin: 5%;
+   
 
 }
 </style>

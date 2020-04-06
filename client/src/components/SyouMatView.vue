@@ -58,8 +58,8 @@ export default {
         .attr('height', rect_size[1])
         .attr('fill-opacity', 1)
         .attr('fill', d => d3.interpolateSpectral(heatScale(d)))
-        .attr('stroke','rgb(8,15,27)')
-        .attr('stroke-width','2')
+        .attr('stroke','white')
+        .attr('stroke-width','1.5')
 
         let xScale = d3.scalePoint().domain(['Mon','Tue','Thu','Wed','Fri','Sat','Sun']).range([0,rect_size[0]*7])
 
@@ -70,9 +70,9 @@ export default {
         .ticks(7)
 
         xAxisContainer.call(xAxis);
-        xAxisContainer.selectAll('text').attr('fill','white')
-        xAxisContainer.selectAll('path').attr('stroke','white')
-        xAxisContainer.selectAll('line').attr('stroke','white')
+        xAxisContainer.selectAll('text').attr('fill','black')
+        xAxisContainer.selectAll('path').attr('stroke','black')
+        xAxisContainer.selectAll('line').attr('stroke','black')
 
         let yScale = d3.scaleLinear().domain([1,24]).range([0,rect_size[1] * 24])
 
@@ -83,9 +83,9 @@ export default {
         .ticks(24)
 
         yAxisContainer.call(yAxis);
-        yAxisContainer.selectAll('text').attr('fill','white')
-        yAxisContainer.selectAll('path').attr('stroke','white')
-        yAxisContainer.selectAll('line').attr('stroke','white')
+        yAxisContainer.selectAll('text').attr('fill','black')
+        yAxisContainer.selectAll('path').attr('stroke','black')
+        yAxisContainer.selectAll('line').attr('stroke','black')
 
         let ranges = [0,0.25,0.5,0.75,1]
 
@@ -118,7 +118,7 @@ export default {
         svg.append('text')
         .attr('x', rect_size[0] * 3.5)
         .attr('y', -15)
-        .attr('fill','white')
+        .attr('fill','black')
         .attr('text-anchor', 'middle')
         .attr('font-size', 14)
         .text('Weekday')
@@ -126,14 +126,14 @@ export default {
         svg.append('text')
         .attr('transform', 'translate(' + (-60) + ',' + rect_size[1] * 12 + ')' + 'rotate(90)')
         .attr('text-anchor', 'middle')
-        .attr('fill','white')
+        .attr('fill','black')
         .attr('font-size', 14)
         .text('Hour of day')
 
         svg.append('text')
         .attr('x', rect_size[0] * 7.65)
         .attr('y', -5)
-        .attr('fill','white')
+        .attr('fill','black')
         .attr('text-anchor', 'middle')
         .attr('font-size', 14)
         .text(heatScale.domain()[1])
@@ -141,7 +141,7 @@ export default {
         svg.append('text')
         .attr('x', rect_size[0] * 7.65)
         .attr('y', rect_size[1] * 25 + 5)
-        .attr('fill','white')
+        .attr('fill','black')
         .attr('text-anchor', 'middle')
         .attr('font-size', 14)
         .text(heatScale.domain()[0])
@@ -152,7 +152,7 @@ export default {
 
     d3.select('#' + 'mat-view-container')
       .style('position', 'absolute')
-      .style('top', '52%')
+      .style('top', '54%')
       .style('right', '40px')
 
     this.width = 340
@@ -180,16 +180,15 @@ export default {
 
 <style scoped>
 #mat-view-container{
-  width:86%;
+  width:93%;
   height:32%;
 }
 
 .name{
-  font-family: 'Microsoft Yahei Light';
   border-left: lightsalmon solid 3px;
-  color:white;
+  color:black;
   padding-left:10px;
-  margin-right: 20px;
+  margin-right: 10px;
   right:0px;
   float: right;
 }

@@ -44,7 +44,7 @@ export default {
             .append('g')
 
         group.append("path")
-            .attr('opacity',0.9)
+            .attr('opacity', 1)
             .attr("fill", d => d3.rgb(this.color(d.index)))
             .attr("stroke", d => d3.rgb(this.color(d.index)))
             .attr("d", this.arc);
@@ -69,7 +69,8 @@ export default {
             .attr("x", 8)
             .attr("dy", ".35em")
             .attr("text-anchor", "end")
-            .attr('fill','white')
+            .attr('fill','black')
+            .attr('font-size', 20)
             .text(d => 'Topic ' + d.index)
     }
   },
@@ -77,7 +78,7 @@ export default {
 
     d3.select('#' + 'chord-view-container')
       .style('position', 'absolute')
-      .style('top', '30px')
+      .style('top', '70px')
       .style('right', '30px')
 
     this.width = 640
@@ -126,14 +127,13 @@ export default {
 
 <style scoped>
 #chord-view-container{
-  width:80%;
+  width:90%;
   height:600px;
 }
 
 .name{
-  font-family: 'Microsoft Yahei Light';
   border-left: lightsalmon solid 3px;
-  color:white;
+  color:black;
   padding-left:10px;
   margin-right: 20px;
   right:0px;
