@@ -45,7 +45,7 @@ export default {
         source: "region_json",
         paint: {
           "fill-color": "#fff",
-          "fill-opacity": 0.15
+          "fill-opacity": 0.1
         },
         minzoom: 5,
         maxzoom: 20
@@ -56,8 +56,8 @@ export default {
         type: "line",
         source: "region_json",
         paint: {
-          "line-width": 1.5,
-          "line-color": "black"
+          "line-width": 3,
+          "line-color": "rgb(8,15,27)"
         },
         minzoom: 5,
         maxzoom: 20
@@ -113,13 +113,13 @@ export default {
 
       data.forEach(d => {
         //2 > 3, 3 > 0.9, 4 > 2,
-        let threshold = 1.5;
+        let threshold = 1;
 
-        if (index == 0) threshold = 3;
-        else if (index == 1) threshold = 0;
-        else if (index == 2) threshold = 3;
-        else if (index == 3) threshold = 0.4;
-        else if (index == 4) threshold = 4;
+        if (index == 0) threshold = 1;
+        else if (index == 1) threshold = 1;
+        else if (index == 2) threshold = 1;
+        else if (index == 3) threshold = 1;
+        else if (index == 4) threshold = 1;
 
         if (d.score[index] > threshold) {
           let meta = {};
@@ -210,11 +210,11 @@ export default {
             "heatmap-weight": [
               "interpolate",
               ["linear"],
-              ["get", "count"],
+              ["get", "weight"],
               8,
-              1,
+              0.1,
               12,
-              2
+              0.2
             ],
             // Increase the heatmap color weight weight by zoom level
             // heatmap-intensity is a multiplier on top of heatmap-weight
@@ -237,15 +237,15 @@ export default {
               0,
               'rgba(0,0,0,0)',
               0.2,
-              d3.interpolateSpectral(0.8),
+              d3.interpolateSpectral(0.5),
               0.4,
-              d3.interpolateSpectral(0.6),
-              0.6,
               d3.interpolateSpectral(0.4),
+              0.6,
+              d3.interpolateSpectral(0.3),
               0.8,
               d3.interpolateSpectral(0.2),
               1,
-              d3.interpolateSpectral(0),
+              d3.interpolateSpectral(0.1),
             ],
             // Adjust the heatmap radius by zoom level
             "heatmap-radius": [
@@ -271,7 +271,6 @@ export default {
             ]
           }
         },
-        "waterway-label"
       );
     },
 

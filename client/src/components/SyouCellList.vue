@@ -1,6 +1,7 @@
 <template>
 
   <div id='cell-list-container'>
+      <div class='name'>基站主题列表</div>
       <div id='cell-list'>
       </div>
   </div>
@@ -93,8 +94,15 @@ export default {
         })
         .text(function(d){
 
+          if(d.name.indexOf('室分') < 0){
             if(d.name.split('_').length > 1) return d.name.split('_')[1].replace('1800','')
             return d.name
+          }
+          else{
+            return d.name.split('_')[2]
+          }
+
+            
         })
         
 
@@ -141,9 +149,9 @@ export default {
     this.width = 340
     this.height = 640
 
-    this.$root.$on('updateCellList', d => {
-      this.update()
-    })
+    //this.$root.$on('updateCellList', d => {
+    this.update()
+    //})
 
   },
 }
@@ -151,7 +159,7 @@ export default {
 
 <style scoped>
 #cell-list-container{
-  width:80%;
+  width:70%;
   height:50%;
 }
 
@@ -159,10 +167,11 @@ export default {
 
   border-left: lightsalmon solid 3px;
   color:white;
-  padding-left:10px;
-  margin-right: 20px;
-  right:0px;
-  float: right;
+  padding-left: 10px; 
+  margin-left: 20px;
+  margin-bottom: 10px;
+  left:0px;
+ 
 }
 
 

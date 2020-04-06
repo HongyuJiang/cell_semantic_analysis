@@ -126,7 +126,7 @@ export default {
 
 <style scoped>
 #chord-view-container{
-  width:90%;
+  width:80%;
   height:600px;
 }
 

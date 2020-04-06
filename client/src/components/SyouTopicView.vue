@@ -35,7 +35,7 @@ export default {
         let that = this
 
         const svg = d3.select("#topic-view").append('svg')
-            .attr("viewBox", [0, 0, this.width, this.height])
+            .attr("viewBox", [-100, 0, this.width + 100, this.height])
             .attr("font-size", 16)
             .attr("font-family", "sans-serif")
 
@@ -47,9 +47,65 @@ export default {
             return 'translate(' +　(i *  (that.width / 6.2) + that.width / 12) + ', 60)'
         })
 
+        let first = d3.select(groups.nodes()[0])
+
+        first.append('line')
+        .attr('x1', -60)
+        .attr('x2', 0)
+        .attr('y1', 33)
+        .attr('y2', 33)
+        .attr('stroke', 'white')
+        .attr('stroke-opacity', '0.5')
+        .attr('stroke-width', 1)
+
+        first.append('line')
+        .attr('x1', -60)
+        .attr('x2', 0)
+        .attr('y1', 3)
+        .attr('y2', 3)
+        .attr('stroke', 'white')
+        .attr('stroke-opacity', '0.5')
+        .attr('stroke-width', 1)
+
+        first.append('line')
+        .attr('x1', -60)
+        .attr('x2', -20)
+        .attr('y1', -42)
+        .attr('y2', -42)
+        .attr('stroke', 'white')
+        .attr('stroke-opacity', '0.5')
+        .attr('stroke-width', 1)
+
+        first.append('text')
+        .attr('x', -65)
+        .attr('text-anchor', 'end')
+        .attr('y', 5)
+        .attr('fill', 'white')
+        .attr('font-size', 12)
+        .attr('font-weight', 100)
+        .text('流入人群')
+
+        first.append('text')
+        .attr('x', -65)
+        .attr('text-anchor', 'end')
+        .attr('y', 37)
+        .attr('fill', 'white')
+        .attr('font-weight', 100)
+        .attr('font-size', 12)
+        .text('流出人群')
+
+        first.append('text')
+        .attr('x', -65)
+        .attr('text-anchor', 'end')
+        .attr('y', -37)
+        .attr('fill', 'white')
+        .attr('font-weight', 100)
+        .attr('font-size', 12)
+        .text('分日统计')
+
         let outerCircleColor = 'grey'
         let innerCircleColor = '#8afd99'
-        let starsColor = '#8afd99'
+        let starsColor = '#999'
 
        let proportions = []
 
@@ -64,51 +120,47 @@ export default {
            }
          }
 
-         let proportion = group1 / (group1 + transfer_data[i][i])
+         let proportion = group1 / transfer_data[i][i]
 
          proportions.push(proportion)
        }
 
         groups.append('circle')
         .attr('r', outerRadius)
-        .attr('fill',outerCircleColor)
+        .attr('stroke', outerCircleColor)
+        .attr('stroke-width', 4)
+        .attr('fill', 'none')
         .attr('opacity',0.5)
         .attr('cx', 0)
         .attr('cy', 0)
 
         groups.append('circle')
         .attr('r',  function(d,i){
-
           return outerRadius * proportions[i]
         })
         .attr('fill',innerCircleColor)
-        //.attr('stroke','black')
-        .attr('opacity', 1)
+        .attr('opacity', 0.7)
         .attr('cx', 0)
         .attr('cy', 0)
 
-        groups.append('text')
-        .attr('fill', '#fff')
-        .attr('y', outerRadius * 2)
-        .attr('text-anchor', 'middle')
-        .style('font-size', 13)
-        .text(function(d, i){
-           return 'Topic ' + i
-        })
-        .on('mouseover', function(d){
+        groups.on('mouseover', function(d){
 
-          groups.selectAll('rect')
-          .transition()
-          .attr('opacity', function(q){
-            if(d.topic == q.topic) return 1
-            else return 0
+          groups.selectAll('.dayBall')
+          .attr('fill', function(q){
+            let topic = d3.select(this).attr('topic')
+            if(d.topic == topic){
+              d3.select(this)
+              .selectAll('circle')
+              .transition()
+              .attr('fill','#D95284')
+            }
           })
         })
         .on('mouseout', function(d){
-
-          groups.selectAll('rect')
+          groups.selectAll('.dayBall')
+          .selectAll('circle')
           .transition()
-          .attr('opacity', 0)
+          .attr('fill', starsColor)
         })
         .on('click', function(d){
 
@@ -117,17 +169,38 @@ export default {
         })
 
         groups.append('rect')
-        .attr('opacity', 0)
-        .attr('fill', function(d,i){
+        .attr('opacity', 0.7)
+        .attr('fill', 'black')
+        .attr('width', 60)
+        .attr('height', 15)
+        .attr('x', -25)
+        .attr('y', 47)
 
+        groups.append('rect')
+        .attr('opacity', 1)
+        .attr('fill', function(d,i){
           return colors[i]
         })
-        .attr('width', 40)
-        .attr('height', 2)
-        .attr('x', -20)
-        .attr('y', 55)
+        .attr('width', 5)
+        .attr('height', 15)
+        .attr('x', -30)
+        .attr('y', 47)
 
-        groups.selectAll('dayBall')
+         groups.append('text')
+        .attr('fill', '#ccc')
+        .attr('x', 5)
+        .attr('y', outerRadius * 2 - 8)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', 13)
+        .attr('font-weight', 50)
+        .text(function(d, i){
+           return '主题 ' + i
+        })
+
+        groups.append('g')
+        .attr('class','dayBall')
+        .attr('topic', d => d.topic)
+        .selectAll('dayBall')
         .data(d => d.day)
         .enter()
         .append('circle')
@@ -139,21 +212,24 @@ export default {
 
             return outerRadius * 1.5 * Math.cos(i * (3.14 / 7) + 1)
         })
-        .attr('r', d => d / 20)
+        .attr('r', d => d / 18)
         .attr('fill',starsColor)
-        .attr('opacity',0.5)
+        .attr('stroke', d3.rgb('#F2F2F2').brighter())
+        .attr('stroke-width', 2)
+        .attr('opacity', 0.7)
+        .attr('class', 'day')
     }   
   },
   mounted(){
 
-    this.width = document.documentElement.clientWidth / 2.5
+    this.width = document.documentElement.clientWidth / 2.3
     this.height = this.width / 5
 
 
     d3.select('#' + 'topic-view-container')
       .style('position', 'absolute')
       .style('top', '30px')
-      .style('left', '32%')
+      .style('left', '28%')
       .style('width', this.width + 'px')
       .style('height', this.height + 'px')
 

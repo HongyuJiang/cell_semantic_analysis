@@ -61,7 +61,7 @@ export default {
         .attr('stroke','rgb(8,15,27)')
         .attr('stroke-width','2')
 
-        let xScale = d3.scaleLinear().domain([1,7]).range([0,rect_size[0]*7])
+        let xScale = d3.scalePoint().domain(['Mon','Tue','Thu','Wed','Fri','Sat','Sun']).range([0,rect_size[0]*7])
 
         const xAxisContainer = svg.append("g")
         .attr("transform", `translate(0,` + (this.height - 20) + `)`);
@@ -132,7 +132,7 @@ export default {
 
         svg.append('text')
         .attr('x', rect_size[0] * 7.65)
-        .attr('y', 0)
+        .attr('y', -5)
         .attr('fill','white')
         .attr('text-anchor', 'middle')
         .attr('font-size', 14)
@@ -140,7 +140,7 @@ export default {
 
         svg.append('text')
         .attr('x', rect_size[0] * 7.65)
-        .attr('y', rect_size[1] * 25)
+        .attr('y', rect_size[1] * 25 + 5)
         .attr('fill','white')
         .attr('text-anchor', 'middle')
         .attr('font-size', 14)
@@ -180,8 +180,8 @@ export default {
 
 <style scoped>
 #mat-view-container{
-  width:90%;
-  height:35%;
+  width:86%;
+  height:32%;
 }
 
 .name{
