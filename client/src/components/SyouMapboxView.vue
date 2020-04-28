@@ -6,6 +6,8 @@
 import DataProvider from "../DataProvider";
 import * as mapboxgl from "mapbox-gl";
 import * as d3 from 'd3';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+var MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
 export default {
   name: "mapbox-view",
@@ -16,8 +18,9 @@ export default {
     this.mapInit(this);
     this.mapLoadGeojson(this);
 
-    this.$root.$on("updateMapTopic", topic => {
-      this.mapAddCircle(this.cell_info, topic);
+    this.$root.$on("updateMapTopic", counter => {
+      this.mapAddCircle(this.cell_info, counter);
+      this.mapAddHeatmap();
     });
 
     this.$root.$on("addTopicCell", cell => {
@@ -45,7 +48,7 @@ export default {
         source: "region_json",
         paint: {
           "fill-color": "#fff",
-          "fill-opacity": 0.1
+          "fill-opacity": 0.15
         },
         minzoom: 5,
         maxzoom: 20
@@ -78,6 +81,9 @@ export default {
     },
 
     mapInit(that) {
+
+      let Draw = new MapboxDraw();
+
       mapboxgl.accessToken =
         "pk.eyJ1IjoiaG9uZ3l1amlhbmciLCJhIjoiY2s3N202NDIxMDhkdzNpcGg3djRtdnN4dCJ9.lysys8PBG25SxeHRF-sPvA";
       this.map = new mapboxgl.Map({
@@ -86,6 +92,10 @@ export default {
         center: [104.849, 31.558], // starting position [lng, lat]
         zoom: 8.5 // starting zoom
       });
+
+      this.map.addControl(Draw, 'bottom-left');
+
+      d3.selectAll('.mapboxgl-control-container').style('z-index', 9999)
     },
     mapLoadGeojson(that) {
 
@@ -101,40 +111,52 @@ export default {
           DataProvider.getCellInfo().then(response => {
             let cell_info = response.data;
             that.cell_info = cell_info;
-            that.mapAddCircle(cell_info, 5);
-            that.mapAddHeatmap();
+            //that.mapAddCircle(cell_info, 5);
+            //that.mapAddHeatmap();
           });
         });
       });
     },
 
-    mapAddCircle(data, index) {
+    mapAddCircle(data, counter) {
+
+      let cell_dict = {}
+
+      for(let cell in data){
+
+        let id = data[cell]['id']
+
+        cell_dict[id] = data[cell]
+      }
+
       let points = [];
 
-      data.forEach(d => {
-        //2 > 3, 3 > 0.9, 4 > 2,
-        let threshold = 1;
+      for(let cell_id in counter){
 
-        if (index == 0) threshold = 1;
-        else if (index == 1) threshold = 1;
-        else if (index == 2) threshold = 1;
-        else if (index == 3) threshold = 1;
-        else if (index == 4) threshold = 1;
+        //console.log(cell_id)
 
-        if (d.score[index] > threshold) {
+        if(cell_dict[cell_id] != undefined){
+          
+          let cell = cell_dict[cell_id]
+
           let meta = {};
           meta["properties"] = {};
-          if (d.name.split("_").length > 1) d.name = d.name.split("_")[1];
-          meta["properties"]["name"] = d.name;
-          meta["properties"]["weight"] = d.score[5] * 3;
+          if (cell.name.split("_").length > 1) cell.name = cell.name.split("_")[1];
+          meta["properties"]["name"] = cell.name;
+          meta["properties"]["weight"] = counter[cell_id] / 30
           meta["type"] = "Feature";
           meta["geometry"] = {};
           meta["geometry"]["type"] = "Point";
-          meta["geometry"]["coordinates"] = [d.lon, d.lat];
+          meta["geometry"]["coordinates"] = [cell.lon, cell.lat];
 
           points.push(meta);
+
         }
-      });
+        else{
+
+          //console.log(cell_id)
+        }
+      }
 
       if (this.map.getSource("cells") != null) {
         this.map.getSource("cells").setData({
@@ -289,8 +311,6 @@ export default {
         // get rendering context for the map canvas when layer is added to the map
         onAdd: function() {
 
-          console.log(123)
-
           //let canvas = document.createElement('canvas');
           let canvas = d3.select('#animate');
           canvas.width = this.width;
@@ -341,7 +361,6 @@ export default {
         }
       };
 
-      console.log(pulsingDot)
 
       this.map.addImage(cell.topic + '-dot', pulsingDot, { pixelRatio: 2 });
 
@@ -363,7 +382,6 @@ export default {
         }
       });
 
-      console.log(hehe)
 
       this.map.addLayer({
         id: cell.topic + '-point',

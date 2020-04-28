@@ -9,19 +9,16 @@
           id = xiaqu
           class="dynamic-attrs"
         />
-
-        <cell-list />
     
     </div>
 
     <syou-mapbox-view class="mapbox-view"/>
 
-    <topic-view />
-    
+    <cell-emb-vis />
 
     <div class="float-layer right-float-layer">
 
-      <chord-view />
+      <user-emb-vis />
       <mat-view />
     </div>  
 
@@ -37,6 +34,8 @@ import FixedAttrIndicator from './components/FixedAttrIndicator';
 import DynamicAttrIndicator from './components/DynamicAttrIndicator';
 import ChordView from './components/SyouChordView';
 import MatView from './components/SyouMatView';
+import UserEmbVis from './components/UserEmbVis';
+import CellEmbVis from './components/CellEmbVis';
 import TopicView from './components/SyouTopicView';
 import CellList from './components/SyouCellList';
 import DataProvider from './DataProvider';
@@ -50,7 +49,9 @@ export default {
     ChordView,
     MatView,
     TopicView,
-    CellList
+    CellList,
+    UserEmbVis,
+    CellEmbVis
   },
   data () {
     return {
@@ -79,13 +80,14 @@ export default {
 .left-float-layer{
 
   left:0px;
+  height:50%;
 }
 
 .right-float-layer{
 
   right:0px;
   background:#F3F3F3;
-  border-left: #cc3300 2px solid
+  
 }
 
 

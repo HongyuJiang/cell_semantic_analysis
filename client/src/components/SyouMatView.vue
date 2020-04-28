@@ -19,9 +19,43 @@ export default {
     return { }
   },
   methods:{
-    chartInit(data){
+    chartInit(persons){
 
-        let mat_data = data.rect
+      let that = this
+
+      let intergrated_rect = []
+
+      for(let i =0;i<7;i++){
+
+        let meta = []
+
+        for(let j=0;j<24;j++){
+
+          meta.push(0)
+        }
+
+        intergrated_rect.push(meta)
+      }
+
+      persons.forEach(function(person){
+
+        let meta_data = that.data[person].rect
+
+        //console.log(meta_data)
+
+        for(let i =0;i<7;i++){
+
+          for(let j=0;j<24;j++){
+
+            intergrated_rect[i][j] += meta_data[i][j]
+          }
+        }
+
+      })
+
+      console.log(intergrated_rect)
+
+        let mat_data = intergrated_rect
 
         let data_max = 0
         let data_min = 0
@@ -31,6 +65,12 @@ export default {
         let heatScale = d3.scaleLinear().domain([data_min, data_max]).range([1,0])
 
         let rect_size = [(this.width) / 8, (this.height) / 26]
+
+        let lowerColor = d3.rgb(50,50,50)
+        let higherColor = d3.rgb(220,220,220)
+
+        let greyScale = d3.interpolateRgb(lowerColor, higherColor)
+
 
         d3.select("#mat-view").select('svg').remove()
 
@@ -57,7 +97,7 @@ export default {
         .attr('width', rect_size[0])
         .attr('height', rect_size[1])
         .attr('fill-opacity', 1)
-        .attr('fill', d => d3.interpolateSpectral(heatScale(d)))
+        .attr('fill', d => greyScale(heatScale(d)))
         .attr('stroke','white')
         .attr('stroke-width','1.5')
 
@@ -101,8 +141,8 @@ export default {
         ranges.forEach(d=>{
         
           legend.append("stop")
-          .attr("offset", d*100 + "%")
-          .attr("stop-color", d3.interpolateSpectral(d))
+          .attr("offset", d * 100 + "%")
+          .attr("stop-color", greyScale(d))
           .attr("stop-opacity", 1);
 
         })
@@ -160,18 +200,16 @@ export default {
 
     let that = this
 
-    DataProvider.getCellFeatures().then(response => {
+    DataProvider.getUserBehavior().then(response => {
               
         that.data = response.data;
-        
-        that.chartInit(that.data[3])
 
         }, error => {
             that.loading = false;
     });
     
-    this.$root.$on('updateMatTopic', topic => {
-      this.chartInit(this.data[topic])
+    this.$root.$on('updateMatTopic', persons => {
+      this.chartInit(persons)
     })
 
   },

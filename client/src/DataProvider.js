@@ -14,4 +14,19 @@ export default class DataProvider {
         return axios.get('/static/cell_features.json');
     }
 
+    static getUserEmbData() {
+
+        return axios.get('/static/user_emb.json');
+    }
+
+    static getUserBehavior() {
+
+        return axios.get('/static/persons_behaviors.json');
+    }
+
+    static getCellEmb() {
+
+        return axios.get('/static/cell_emb.json');
+    }
+
 }

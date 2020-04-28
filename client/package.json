@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@antv/g2": "^3.2.7",
+    "@mapbox/mapbox-gl-draw": "^1.1.2",
     "axios": "^0.18.0",
     "d3": "^5.5.0",
     "dns": "^0.2.2",

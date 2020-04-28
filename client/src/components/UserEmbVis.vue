@@ -1,0 +1,272 @@
+<template>
+
+  <div id='user-emb-container'>
+      <div class='name'>用户聚类视图</div>
+      <div id='user-emb'>
+   
+      </div>
+  </div>
+</template>
+<script>
+
+import * as d3 from 'd3';
+import DataProvider from '../DataProvider';
+
+
+export default {
+  name:'user-emb-vis',
+  data () {
+    return { }
+  },
+  methods:{
+    chartInit(data, cells){
+
+        let persons_seqs_dict = {}
+
+        let cells_retriver = {}
+
+        for(let cell in cells){
+
+             if(cells[cell].id != undefined){
+
+                cells[cell]['code'] = cell
+
+                let id = cells[cell].id
+
+                cells_retriver[id] = cells[cell]
+            }
+        }
+
+        data.forEach(function(d){
+
+            persons_seqs_dict[d.person] = d.seq
+        })
+
+        //console.log(cells_retriver)
+
+        d3.select("#user-emb").select('svg').remove()
+
+        let zoom_lambda = this.width / 200
+
+        let container = d3.select("#user-emb").append('svg')
+            .attr("viewBox", [-50, -50, this.width + 50, this.height + 50])
+            .attr("font-size", 16)
+            .attr("font-family", "sans-serif")
+
+        const svg = container.append('g')
+
+        svg.append('circle')
+        .attr('r', this.width/2)
+        .attr('fill','black')
+        .attr('opacity', 0.1)
+        .attr('cx',this.width/2)
+        .attr('cy',this.height/2)
+
+        let that = this
+
+        svg.append('g')
+        .attr('transform', 'translate(' + this.width/2 + ',' + this.height/2 + ')')
+        .selectAll('axisLine')
+        .data([0,1,2,3,4,5,6,7])
+        .enter()
+        .append('line')
+        .attr('x1', function(d,i){
+
+            let r = that.width/2
+            return r * Math.cos(2 * Math.PI/8 * d)
+        })
+        .attr('x2', function(d,i){
+        
+            let r = 0
+            return r * Math.cos(2 * Math.PI/8 * d)
+        })
+        .attr('y1', function(d,i){
+        
+            let r = that.width/2
+            return r * Math.sin(2 * Math.PI/8 * d)
+        })
+        .attr('y2', function(d,i){
+        
+            let r = 0
+            return r * Math.sin(2 * Math.PI/8 * d)
+        })
+        .attr('stroke','white')
+        .attr('stroke-width','1.5')
+        .attr('opacity', 0.8)
+
+        let button = container.append('g')
+        .attr('transform','translate(280,320)')
+        .on('click', d => {
+
+            button
+            .selectAll('rect')
+            .attr('fill','grey')
+        })
+       
+        button.append('rect')
+        .attr('width', 60)
+        .attr('height', 20)
+        .attr('rx', 10)
+        .attr('ry', 10)
+        .attr('fill','black')
+       
+        button.append('text')
+        .attr('fill', 'white')
+        .text('confirm')
+        .attr('y',15)
+        .attr('x',8)
+        .attr('font-size', 14)
+       
+        svg.selectAll('points')
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr('class', 'point')
+        .attr('person', d=>d.person)
+        .attr('r', 1)
+        .attr('fill', 'black')
+        .attr('opacity', '0.5')
+        .attr('cx', d=>d.x * zoom_lambda + this.width / 2)
+        .attr('cy', d=>d.y * zoom_lambda + this.height / 2)
+        
+        let selecting = false
+
+        let selected_persons = []
+
+        svg.on("mouseover", function(d){
+
+            d3.select(this).style("cursor", "crosshair");
+        })
+        .on('mousedown', function(d){
+
+            var coords = d3.mouse(this);
+            svg.append('circle')
+            .attr('id','pointer')
+            .attr('r', 5)
+            .attr('fill','red')
+            .attr('opacity', 0.5)
+            .attr('cx', coords[0])
+            .attr('cy', coords[1])
+
+            selecting = true
+        })
+        .on('mousemove', function(d){
+
+            if(selecting){
+
+                var coords = d3.mouse(this);
+                svg.select('#pointer')
+                //.transition()
+                .attr('cx', coords[0])
+                .attr('cy', coords[1])
+
+                let x = coords[0]
+                let y = coords[1]
+
+                svg.selectAll('.point')
+                .attr('fill', function(d){
+
+                    if(d3.select(this).attr('selected') == 1){
+
+                        let person = d3.select(this).attr('person')
+                        selected_persons.push(person)
+                        return 'red'
+                    }
+
+                    let cx = d.x * zoom_lambda + that.width / 2
+                    let cy = d.y * zoom_lambda + that.width / 2
+                    let dis = (x - cx) * (x - cx) + (y - cy) * (y - cy)
+
+                    if(dis <= 25){
+                        d3.select(this).attr('selected', 1)
+                        return 'red'
+                    }
+                
+                })
+            }
+
+        })
+        .on('mouseup', function(d){
+
+            svg.select('#pointer')
+            .remove()
+
+            selecting = false
+
+            let cell_counter = {}
+
+            selected_persons.forEach(function(person){
+
+                let seqs = persons_seqs_dict[person]
+
+                seqs.forEach(function(cell){
+
+                    if(cell_counter[cell] != undefined)
+                        cell_counter[cell] += 1
+                    else
+                        cell_counter[cell] = 1
+                })
+            })
+
+            that.$root.$emit('updateMapTopic', cell_counter) 
+
+            that.$root.$emit('updateMatTopic', selected_persons)
+
+            that.$root.$emit('updateCellCluster', cell_counter)
+
+            selected_persons = []
+
+            d3.selectAll('.point').attr('selected', 0 )
+        })
+        
+    }   
+  },
+  mounted(){
+
+    d3.select('#' + 'user-emb-container')
+      .style('position', 'absolute')
+      .style('top', '3%')
+      .style('right', '40px')
+
+    this.width = 340
+    this.height = 340
+
+    let that = this
+
+    DataProvider.getUserEmbData().then(response => {
+
+        DataProvider.getCellInfo().then(response2 => {
+              
+            that.data = response.data;
+            
+            that.chartInit(that.data, response2.data)
+
+            }, error => {
+                that.loading = false;
+        });
+
+        }, error => {
+            that.loading = false;
+    });
+
+  },
+}
+</script>
+
+<style scoped>
+#user-emb-container{
+  width:93%;
+  height:32%;
+}
+
+.name{
+  border-left: lightsalmon solid 3px;
+  color:black;
+  padding-left:10px;
+  margin-right: 10px;
+  right:0px;
+  float: right;
+}
+
+
+</style>
