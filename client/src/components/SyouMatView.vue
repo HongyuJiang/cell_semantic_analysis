@@ -218,7 +218,7 @@ export default {
 
 <style scoped>
 #mat-view-container{
-  width:93%;
+  width:85%;
   height:32%;
 }
 

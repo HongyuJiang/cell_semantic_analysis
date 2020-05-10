@@ -148,14 +148,16 @@ export default {
 
             let days = ['Mon', 'Tue', 'Thu', 'Wed', 'Fri', 'Sat', 'Sun']
 
-             sticksGroup
+            /*sticksGroup
             .append('text')
             .attr('x', function(d,i){
                 return -60
             })
             .attr('y', 5)
             .attr('fill','white')
-            .attr('font-size', 15)
+            .attr('stroke', 'transparent')
+            .attr('font-weight', 50)
+            .attr('font-family', 'Times')
             .text('1')
 
             sticksGroup
@@ -165,8 +167,9 @@ export default {
             })
             .attr('y', 205)
             .attr('fill','white')
-            .attr('font-size', 14)
-            .text('24')
+            .attr('stroke', 'transparent')
+            .attr('font-family', 'Times')
+            .text('24')*/
 
              sticksGroup
             .append('line')
@@ -256,7 +259,9 @@ export default {
         let zoom_lambda = this.width / 200
 
         let container = d3.select("#cell-emb").append('svg')
-            .attr("viewBox", [-50, -50, this.width + 60, this.height + 60])
+            .attr("viewBox", [-50, -50, this.width + 50, this.height + 50])
+            //.attr('width',this.width)
+            //.attr('height',this.height)
             .attr("font-size", 16)
             .attr("font-family", "sans-serif")
 
@@ -344,7 +349,7 @@ export default {
     d3.select('#' + 'cell-emb-container')
       .style('position', 'absolute')
       .style('top', '0%')
-      .style('left', '53%')
+      .style('left', '57%')
 
     this.width = 340
     this.height = 880

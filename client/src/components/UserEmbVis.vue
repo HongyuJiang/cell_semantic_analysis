@@ -54,6 +54,7 @@ export default {
             .attr("font-family", "sans-serif")
 
         const svg = container.append('g')
+        .attr('transform', 'translate(0,-30)')
 
         svg.append('circle')
         .attr('r', this.width/2)
@@ -65,7 +66,7 @@ export default {
         let that = this
 
         svg.append('g')
-        .attr('transform', 'translate(' + this.width/2 + ',' + this.height/2 + ')')
+        .attr('transform', 'translate(' + this.width/2 + ',' + (this.height/2) + ')')
         .selectAll('axisLine')
         .data([0,1,2,3,4,5,6,7])
         .enter()
@@ -95,7 +96,7 @@ export default {
         .attr('opacity', 0.8)
 
         let button = container.append('g')
-        .attr('transform','translate(280,320)')
+        .attr('transform','translate(280,290)')
         .on('click', d => {
 
             button
@@ -225,7 +226,7 @@ export default {
 
     d3.select('#' + 'user-emb-container')
       .style('position', 'absolute')
-      .style('top', '3%')
+      .style('top', '2%')
       .style('right', '40px')
 
     this.width = 340
