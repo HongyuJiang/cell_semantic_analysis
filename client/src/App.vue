@@ -46,10 +46,7 @@ export default {
     SyouMapboxView,
     FixedAttrIndicator,
     DynamicAttrIndicator,
-    ChordView,
     MatView,
-    TopicView,
-    CellList,
     UserEmbVis,
     CellEmbVis
   },

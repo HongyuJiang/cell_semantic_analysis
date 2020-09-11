@@ -1,7 +1,7 @@
 <template>
 
   <div id='mat-view-container'>
-      <div class='name'>基站访问热度日历图</div>
+      <div class='name'>用户访问热度日历图</div>
       <div id='mat-view'>
    
       </div>
@@ -41,8 +41,6 @@ export default {
 
         let meta_data = that.data[person].rect
 
-        //console.log(meta_data)
-
         for(let i =0;i<7;i++){
 
           for(let j=0;j<24;j++){
@@ -52,8 +50,6 @@ export default {
         }
 
       })
-
-      console.log(intergrated_rect)
 
         let mat_data = intergrated_rect
 

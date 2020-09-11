@@ -58,7 +58,6 @@ export default {
     border-left: 2px solid #F0B04D;
     position: absolute;
     width:200px;
-    height: 80%;
     padding-left:10px;
   
 }

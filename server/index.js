@@ -1,65 +1,99 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/regions', function (req, res) {
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS")
+  res.header('Access-Control-Allow-Credentials', true);
+  //res.header("Content-Type", "application/json;");
+  next();
+});
 
-   
-    // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', '*');
+let focused_persons = []
 
-    // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+app.post('/users', (req, res) => {
 
-    // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  const fs = require('fs');
-
-  fs.readFile('510781.json', 'utf8', function read(err, data) {
-      if (err) {
-          throw err;
-      }
-      
-      ret = JSON.parse(data)
-
-      res.send(ret);
-  });
-})
-
-app.get('/groupitem', function (req, res) {
-
-    // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
-    // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-    // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  const d3 = require('d3-dsv');
-  const fs = require('fs');
+  const MongoClient = require('mongodb').MongoClient;
+  const uri = "mongodb+srv://lanmiemie:zly3885251@mobiledata.ez0ez.mongodb.net/MobileData?retryWrites=true&w=majority";
   
-  fs.readFile('fake_data.csv', 'utf8', function read(err, data) {
-      if (err) {
-          throw err;
+  let data = Object.keys(req.body)[0];
+
+  let persons = JSON.parse(data)['persons']
+
+  //console.log(persons)
+
+  MongoClient.connect(uri, { useNewUrlParser: true }).then((conn) => {
+
+      let fake_persons = {"13018149529": 1}
+
+      const db = conn.db("cotton");
+      // 增加
+      db.collection("heihei").find({}, {fields: persons}).toArray().then((arr) => {
+         
+          //console.log(arr)
+
+          ret_data = arr[0]
+
+          focused_persons = ret_data
+
+          res.sendStatus(200)
+
+      }).catch((err) => {
+        console.log(err);
+      });
+
+  }).catch((err) => {
+      console.log(err);
+    });
+
+});
+
+app.post('/cells', (req, res) => {
+
+  let hourCounter = {}
+
+  let data = req.body;
+
+  let cells = data['cells']
+
+  let cell_dict = {}
+
+  cells.forEach(function(cell){
+
+    cell_dict[cell] = 1
+  })
+
+  for (person in focused_persons){
+
+    for (cell in focused_persons[person]){
+
+      if(cell_dict[cell] != undefined){
+
+        for (hour in focused_persons[person][cell]){
+
+          if (hourCounter[hour] != undefined){
+
+            hourCounter[hour] += +focused_persons[person][cell][hour]
+          }
+          else{
+
+            hourCounter[hour] = +focused_persons[person][cell][hour]
+          }
+        }
       }
-      
-      ret = d3.csvParse(data)
+    }
+  }
 
-      res.send(ret);
-  });
-})
+  //console.log(hourCounter)
 
-const server = app.listen(3001, function () {
+  res.status(200).send(JSON.stringify(hourCounter))
+});
+
+const server = app.listen(4000, function () {
+
 
   const host = 'server.address().address'
   const port = server.address().port

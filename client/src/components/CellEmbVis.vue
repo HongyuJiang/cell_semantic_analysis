@@ -148,75 +148,24 @@ export default {
 
             let days = ['Mon', 'Tue', 'Thu', 'Wed', 'Fri', 'Sat', 'Sun']
 
-            /*sticksGroup
-            .append('text')
-            .attr('x', function(d,i){
-                return -60
-            })
-            .attr('y', 5)
-            .attr('fill','white')
-            .attr('stroke', 'transparent')
-            .attr('font-weight', 50)
-            .attr('font-family', 'Times')
-            .text('1')
-
             sticksGroup
-            .append('text')
-            .attr('x', function(d,i){
-                return -60
-            })
-            .attr('y', 205)
-            .attr('fill','white')
-            .attr('stroke', 'transparent')
-            .attr('font-family', 'Times')
-            .text('24')*/
-
-             sticksGroup
             .append('line')
             .attr('x1', function(d,i){
-                return 300
+                return i * 50
             })
             .attr('x2', function(d,i){
-                return -40
-            })
-            .attr('y1', 0)
-            .attr('y2', 0)
-            .attr('stroke','green')
-            .attr('opacity','0.7')
-            .attr('stroke-width','3')
-
-             sticksGroup
-            .append('line')
-            .attr('x1', function(d,i){
-                return -40
-            })
-            .attr('x2', function(d,i){
-                return -40
+                return i * 50
             })
             .attr('y1', 0)
             .attr('y2', 200)
-            .attr('stroke','green')
-            .attr('stroke-width','3')
-            .attr('opacity','0.7')
-
-            sticksGroup
-            .append('line')
-            .attr('x1', function(d,i){
-                return i*50
-            })
-            .attr('x2', function(d,i){
-                return i*50
-            })
-            .attr('y1', 0)
-            .attr('y2', 200)
-            .attr('stroke','green')
+            .attr('stroke','#666')
             .attr('stroke-width','3')
             .attr('opacity','0.7')
 
             sticksGroup
             .append('text')
             .attr('x', function(d,i){
-                return i*50
+                return i * 50
             })
             .attr('y', 205)
             .attr('fill','white')
@@ -244,6 +193,20 @@ export default {
             .attr('fill','none')
             .attr('stroke-width','2')
             .attr('opacity','0.7')
+
+            let yScale = d3.scaleLinear().domain([1,24]).range([0,200])
+
+            const yAxisContainer = sticksGroup.append("g")
+            .attr("transform", `translate( ` + -40 + `,0)`);
+
+            const yAxis = d3.axisLeft(yScale)
+            .ticks(7)
+
+            yAxisContainer.call(yAxis);
+            yAxisContainer.selectAll('text').attr('fill','white')
+            yAxisContainer.selectAll('path').attr('stroke','white')
+            yAxisContainer.selectAll('line').attr('stroke','white')
+
         }
 
         createStick(fake_data, 0)
@@ -349,7 +312,7 @@ export default {
     d3.select('#' + 'cell-emb-container')
       .style('position', 'absolute')
       .style('top', '0%')
-      .style('left', '57%')
+      .style('left', '52%')
 
     this.width = 340
     this.height = 880

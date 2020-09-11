@@ -11,6 +11,7 @@
 
 import * as d3 from 'd3';
 import DataProvider from '../DataProvider';
+import $ from "jquery";
 
 
 export default {
@@ -140,7 +141,7 @@ export default {
         })
         .on('mousedown', function(d){
 
-            var coords = d3.mouse(this);
+            var coords = d3.pointer(d, this);
             svg.append('circle')
             .attr('id','pointer')
             .attr('r', 5)
@@ -153,9 +154,12 @@ export default {
         })
         .on('mousemove', function(d){
 
+            //console.log(this, d)
+
             if(selecting){
 
-                var coords = d3.mouse(this);
+                var coords = d3.pointer(d, this);
+    
                 svg.select('#pointer')
                 //.transition()
                 .attr('cx', coords[0])
@@ -208,6 +212,18 @@ export default {
                         cell_counter[cell] = 1
                 })
             })
+
+            let selected_persons_dict = {}
+
+            selected_persons.forEach(function(person){
+
+                selected_persons_dict[person] = 1
+            })
+
+            $.post('http://localhost:4000/users/', JSON.stringify({'persons': selected_persons_dict}))
+               .done(function( data ) {
+                   console.log(data)
+            });
 
             that.$root.$emit('updateMapTopic', cell_counter) 
 
