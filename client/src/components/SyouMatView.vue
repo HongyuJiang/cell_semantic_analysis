@@ -206,7 +206,7 @@ export default {
     
     this.$root.$on('updateMatTopic', persons => {
       this.chartInit(persons)
-    })
+    })//获取用户聚类图中选中的persons
 
   },
 }

@@ -21,7 +21,7 @@ export default {
     this.$root.$on("updateMapTopic", (counter) => {
       this.mapAddCircle(this.cell_info, counter);
       this.mapAddHeatmap();
-    });
+    });//counter中key为聚类试图选中序列中的基站，value为seq中基站出现的次数
 
     this.$root.$on("addTopicCell", (cell) => {
       this.mapAddTopicCell(cell);
@@ -90,7 +90,8 @@ export default {
       });
 
       d3.selectAll(".mapboxgl-control-container").style("z-index", 9999);
-    },
+    },//初始化地图，给一个容器
+
     mapLoadGeojson(that) {
       this.map.on("load", function () {
         that.$root.$emit("updateCellList");
@@ -104,15 +105,15 @@ export default {
             let cell_info = response.data;
             that.cell_info = cell_info;
           });
-        });
+        });//加载地图数据
 
         that.map.on("move", function (e) {
-          if (!d3.select("#selection").empty()) {
+          if (!d3.select("#selection").empty()) {//empty()检测元素是否为空
             let selection = d3.select("#selection");
             let lat = selection.attr("lat");
             let lng = selection.attr("lng");
 
-            let new_pos = that.map.project(new mapboxgl.LngLat(lng, lat));
+            let new_pos = that.map.project(new mapboxgl.LngLat(lng, lat));//获取经纬度在屏幕上的位置
 
             selection.attr("cx", new_pos.x);
             selection.attr("cy", new_pos.y);
@@ -120,12 +121,14 @@ export default {
             d3.select('#ringContainer')
             .attr('transform', 'translate(' + new_pos.x + ',' + new_pos.y + ')')
           }
-        });
+        });//地图上的元素跟着地图一起移动
 
         that.map.on("click", function (e) {
-          let s_point = e.point;
-          let point = e.lngLat.wrap();
+ 
+          let s_point = e.point;//获取在屏幕上的位置
 
+          let point = e.lngLat.wrap();//获取实际的经纬度
+        
           let canvas = that.map.getCanvasContainer();
 
           let selected_cell_list = [];
@@ -143,9 +146,10 @@ export default {
 
             if (dis < 20) {
               selected_cell_list.push(cell);
+              
             }
-          }
-
+          }//选择距离点击位置近的点
+          console.log("selected_cell_list",selected_cell_list)
           let ring_width = 150, ring_height = 150
           const radius = Math.min(ring_width, ring_height) / 2;
 
@@ -155,7 +159,7 @@ export default {
   
           let pie = d3
             .pie()
-            .padAngle(0.005)
+            .padAngle(0.005)//弧之间的间隙
             .sort(null)
             .value((d) => d.value);
 
@@ -164,6 +168,7 @@ export default {
           }).done(function (data) {
             let hourData = JSON.parse(data);
             d3.select("#d3-canvas").remove();
+            console.log("hourData",hourData)
 
             let svg = d3
               .select(canvas)
@@ -279,6 +284,7 @@ export default {
           //console.log(cell_id)
         }
       }
+      console.log("points",points)
 
       if (this.map.getSource("cells") != null) {
         this.map.getSource("cells").setData({

@@ -36,14 +36,13 @@ export default {
 
                 cells_retriver[id] = cells[cell]
             }
-        }
+        }//给有id的基站添加code属性，该属性即为10065|11162类型
 
         data.forEach(function(d){
 
             persons_seqs_dict[d.person] = d.seq
         })
 
-        //console.log(cells_retriver)
 
         d3.select("#user-emb").select('svg').remove()
 
@@ -154,10 +153,11 @@ export default {
         })
         .on('mousemove', function(d){
 
-            //console.log(this, d)
+            
 
             if(selecting){
 
+                //
                 var coords = d3.pointer(d, this);
     
                 svg.select('#pointer')
@@ -174,7 +174,7 @@ export default {
                     if(d3.select(this).attr('selected') == 1){
 
                         let person = d3.select(this).attr('person')
-                        selected_persons.push(person)
+                        selected_persons.push(person)//selected_persons中为选中的person
                         return 'red'
                     }
 
@@ -187,7 +187,7 @@ export default {
                         return 'red'
                     }
                 
-                })
+                })//如果point距离鼠标滑过的点小于5个像素点就变红，
             }
 
         })
@@ -203,7 +203,7 @@ export default {
             selected_persons.forEach(function(person){
 
                 let seqs = persons_seqs_dict[person]
-
+            
                 seqs.forEach(function(cell){
 
                     if(cell_counter[cell] != undefined)
@@ -211,18 +211,18 @@ export default {
                     else
                         cell_counter[cell] = 1
                 })
-            })
+            })//cell_counter中key为seq中的基站，value为seq中基站出现的次数
 
             let selected_persons_dict = {}
 
             selected_persons.forEach(function(person){
 
                 selected_persons_dict[person] = 1
-            })
+            })//selected_persons_dict中key为选中的person value为1
+            //console.log("selected_persons_dict",selected_persons_dict)
 
             $.post('http://localhost:4000/users/', JSON.stringify({'persons': selected_persons_dict}))
                .done(function( data ) {
-                   console.log(data)
             });
 
             that.$root.$emit('updateMapTopic', cell_counter) 
@@ -250,7 +250,8 @@ export default {
 
     let that = this
 
-    DataProvider.getUserEmbData().then(response => {
+//读取用户通话位置和基站位置，data为user_emb,res2为cell_info
+    DataProvider.getUserEmbData().then(response => {       
 
         DataProvider.getCellInfo().then(response2 => {
               

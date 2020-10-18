@@ -16,30 +16,31 @@ let focused_persons = []
 
 app.post('/users', (req, res) => {
 
-  const MongoClient = require('mongodb').MongoClient;
+  const MongoClient = require('mongodb').MongoClient;//创建服务器实例
   const uri = "mongodb+srv://lanmiemie:zly3885251@mobiledata.ez0ez.mongodb.net/MobileData?retryWrites=true&w=majority";
   
   let data = Object.keys(req.body)[0];
+  //console.log("data",data)
 
-  let persons = JSON.parse(data)['persons']
+  let persons = JSON.parse(data)['persons']//和userembvis中的selected_persons_dict是一样的
 
-  //console.log(persons)
+  //console.log("persons",persons)
 
-  MongoClient.connect(uri, { useNewUrlParser: true }).then((conn) => {
+  MongoClient.connect(uri, { useNewUrlParser: true }).then((conn) => {    //与网上的mongdb服务器连接
 
       let fake_persons = {"13018149529": 1}
 
-      const db = conn.db("cotton");
+      const db = conn.db("cotton");//创建数据库的实例
       // 增加
       db.collection("heihei").find({}, {fields: persons}).toArray().then((arr) => {
          
-          //console.log(arr)
+          //console.log("arr",arr)
 
           ret_data = arr[0]
-
+          //console.log("ret_data",ret_data)
           focused_persons = ret_data
 
-          res.sendStatus(200)
+          res.sendStatus(200)//不返回数据 发送状态码200表示收到
 
       }).catch((err) => {
         console.log(err);
@@ -49,15 +50,17 @@ app.post('/users', (req, res) => {
       console.log(err);
     });
 
-});
+});//收到前端发送的selected_persons_dict（key为选中的person value为1），查询的结果为focused_persons，内部为用户的相关基站及其各个时段的访问次数，不返回结果
 
 app.post('/cells', (req, res) => {
 
   let hourCounter = {}
 
-  let data = req.body;
+  let data = req.body;//对象
+  //console.log("houtai",data)
 
-  let cells = data['cells']
+  let cells = data['cells']//取对象中的数组
+  //console.log("cells",cells)
 
   let cell_dict = {}
 
@@ -89,8 +92,8 @@ app.post('/cells', (req, res) => {
 
   //console.log(hourCounter)
 
-  res.status(200).send(JSON.stringify(hourCounter))
-});
+  res.status(200).send(JSON.stringify(hourCounter))//web服务器发送数据时，数据必须为字符串
+});//收到前端发送的selected_cell_list（选中的基站编号），查询结果为聚类视图选中的用户们所涉及的相关基站在不同时间的使用次数
 
 const server = app.listen(4000, function () {
 
