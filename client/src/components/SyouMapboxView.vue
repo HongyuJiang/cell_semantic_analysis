@@ -81,7 +81,7 @@ export default {
 
     mapInit(that) {
       mapboxgl.accessToken =
-        "pk.eyJ1IjoiaG9uZ3l1amlhbmciLCJhIjoiY2s3N202NDIxMDhkdzNpcGg3djRtdnN4dCJ9.lysys8PBG25SxeHRF-sPvA";
+        "pk.eyJ1IjoiaG9uZ3l1amlhbmciLCJhIjoiY2tnajVvNTZiMGE5YTJ3bmZ4bTkwZ2FzeSJ9.Jn2qkNB2GcQUdbaSQTaGuQ";
       this.map = new mapboxgl.Map({
         container: "map", // container id
         style: "mapbox://styles/hongyujiang/cjl1ya0sn4m0m2sqj0pbkuqor", // stylesheet location

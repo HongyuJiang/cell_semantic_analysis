@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="float-layer left-float-layer">
-       <fixed-attr-indicator class="fixed-attrs" name='基于基站轨迹的城市移动模式分析系统'/>
+       <fixed-attr-indicator class="fixed-attrs" name='城市人群行为模式分析系统'/>
        <dynamic-attr-indicator 
           name=基站数量
           value=9987

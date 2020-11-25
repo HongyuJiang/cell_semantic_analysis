@@ -34,7 +34,7 @@ export default {
 
                 let id = cells[cell].id
 
-                cells_retriver[id] = cells[cell]
+                cells_retriver[id] = cells[cell]//key为cell_info的id
             }
         }//给有id的基站添加code属性，该属性即为10065|11162类型
 
