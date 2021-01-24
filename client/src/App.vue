@@ -13,6 +13,7 @@
     </div>
 
     <syou-mapbox-view class="mapbox-view"/>
+    <chord-view />
 
     <cell-emb-vis />
 
@@ -39,6 +40,7 @@ import CellEmbVis from './components/CellEmbVis';
 import TopicView from './components/SyouTopicView';
 import CellList from './components/SyouCellList';
 import DataProvider from './DataProvider';
+import SyouChordView from './components/SyouChordView.vue';
 
 export default {
   name: 'App',
@@ -48,7 +50,8 @@ export default {
     DynamicAttrIndicator,
     MatView,
     UserEmbVis,
-    CellEmbVis
+    CellEmbVis,
+    ChordView
   },
   data () {
     return {
@@ -77,7 +80,7 @@ export default {
 .left-float-layer{
 
   left:0px;
-  height:50%;
+  height:20%;
 }
 
 .right-float-layer{

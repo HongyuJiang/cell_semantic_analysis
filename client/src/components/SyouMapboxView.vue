@@ -17,6 +17,7 @@ export default {
     this.map = "";
     this.mapInit(this);
     this.mapLoadGeojson(this);
+    this.VIP_cells = []
 
     this.$root.$on("updateMapTopic", (counter) => {
       this.mapAddCircle(this.cell_info, counter);
@@ -29,6 +30,27 @@ export default {
 
     this.$root.$on("addMarker", (cell) => {
       this.mapAddMarker(cell);
+    });
+
+    let that = this
+
+    this.$root.$on('getScreenInfo', cells => {
+
+      cells.forEach(function(d){
+
+        let source_pos = that.map.project(new mapboxgl.LngLat(d.source.lon, d.source.lat));//获取经纬度在屏幕上的位置
+
+        let target_pos = that.map.project(new mapboxgl.LngLat(d.target.lon, d.target.lat));//获取经纬度在屏幕上的位置
+
+        d.source.pos = source_pos
+
+        d.target.pos = target_pos
+      })
+
+      this.VIP_cells = cells
+
+      that.$root.$emit('updateDynamicCells', cells)
+
     });
   },
   methods: {
@@ -121,6 +143,23 @@ export default {
             d3.select('#ringContainer')
             .attr('transform', 'translate(' + new_pos.x + ',' + new_pos.y + ')')
           }
+
+          if(that.VIP_cells.length > 0){
+
+            that.VIP_cells.forEach(function(d){
+
+              let source_pos = that.map.project(new mapboxgl.LngLat(d.source.lon, d.source.lat));//获取经纬度在屏幕上的位置
+
+              let target_pos = that.map.project(new mapboxgl.LngLat(d.target.lon, d.target.lat));//获取经纬度在屏幕上的位置
+
+              d.source.pos = source_pos
+
+              d.target.pos = target_pos
+            })
+
+            that.$root.$emit('updateDynamicCells', that.VIP_cells)
+          }
+
         });//地图上的元素跟着地图一起移动
 
         that.map.on("click", function (e) {
@@ -150,7 +189,7 @@ export default {
             }
           }//选择距离点击位置近的点
           console.log("selected_cell_list",selected_cell_list)
-          let ring_width = 150, ring_height = 150
+          let ring_width = 120, ring_height = 120
           const radius = Math.min(ring_width, ring_height) / 2;
 
           let arc = d3.arc()
@@ -168,8 +207,7 @@ export default {
           }).done(function (data) {
             let hourData = JSON.parse(data);
             d3.select("#d3-canvas").remove();
-            console.log("hourData",hourData)
-
+        
             let svg = d3
               .select(canvas)
               .append("svg")
@@ -215,6 +253,7 @@ export default {
               .attr("fill", (d) => color(d.data.name))
               .attr('stroke', 'rgb(34,38,47)')
               .attr('stroke-width', 2)
+              .attr('stroke-opacity', 0.3)
               .attr("d", arc)
               .append("title")
               .text((d) => `${d.data.name}: ${d.data.value.toLocaleString()}`);
@@ -284,8 +323,7 @@ export default {
           //console.log(cell_id)
         }
       }
-      console.log("points",points)
-
+  
       if (this.map.getSource("cells") != null) {
         this.map.getSource("cells").setData({
           type: "FeatureCollection",
@@ -305,7 +343,7 @@ export default {
           type: "circle",
           source: "cells",
           paint: {
-            "circle-radius": [
+            /*"circle-radius": [
               "interpolate",
               ["linear"],
               ["zoom"],
@@ -315,7 +353,8 @@ export default {
               ["*", ["get", "weight"], 1],
               13,
               ["*", ["get", "weight"], 1.5],
-            ],
+            ],*/
+            "circle-radius": 1,
             "circle-color": "#ccc",
             "circle-stroke-width": 0,
             "circle-stroke-color": "#fff",

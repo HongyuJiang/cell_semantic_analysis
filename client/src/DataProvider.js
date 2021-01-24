@@ -7,7 +7,7 @@ export default class DataProvider {
     }
     static getRegionJson() {
 
-        return axios.get('https://raw.githubusercontent.com/HongyuJiang/zhang_gouzi/master/server/510781.json');
+        return axios.get('/static/510700.json');
     }
     static getCellFeatures() {
 

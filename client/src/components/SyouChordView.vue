@@ -1,7 +1,7 @@
 <template>
 
   <div id='chord-view-container'>
-    <div class='name'>基站主题之间转移关系</div>
+    <div class='name'>基站动态信息</div>
       <div id='chord-view'>
    
       </div>
@@ -11,133 +11,201 @@
 
 import * as d3 from 'd3';
 
-let data = [
-    [ 2.6697, 0,       0.9137, 0,       1.2648, -0.1355],
-    [ 0,      5.4090,  0,      1.6314,  0,      -0.1002],
-    [ 0.913,  0,       4.1905, 0,       2.3152, 0.2634],
-    [ 0,      1.6359,  0,      2.828,   -0.950, 0.4847],
-    [ 1.2650, 0,       2.3121, -0.9511, 4.3240, 0.2685],
-    [-0.1336, -0.0973, 0.2625, 0.4856,  0.2665, 1.682]
-]
-
 export default {
   name:'chord-view',
   data () {
-    return {
-      lineData: data
-    }
+    return { }
   },
   methods:{
-    chartInit(){
+    chartInit(cell_relations){
 
-        const svg = d3.select("#chord-view").append('svg')
-            .attr("viewBox", [-this.width / 2, -this.height / 2, this.width, this.height])
-            .attr("font-size", 16)
-            .attr("font-family", "sans-serif");
+      d3.select("#chord-view").selectAll('*').remove()
 
-        const chords = this.chord(this.lineData);
+      const svg = d3.select("#chord-view").append('svg')
+          .attr("height", this.height)
+          .attr("width", this.width)
+          .attr("font-size", 16)
+          .attr("font-family", "sans-serif");
 
-        const group = svg.append("g")
-            .selectAll("g")
-            .data(chords.groups)
-            .enter()
-            .append('g')
+      let yRecorder = {}
 
-        group.append("path")
-            .attr('opacity', 1)
-            .attr("fill", d => d3.rgb(this.color(d.index)))
-            .attr("stroke", d => d3.rgb(this.color(d.index)))
-            .attr("d", this.arc);
+      let cell_dict = {}
 
-        const groupName = group.append("g")
-            .attr("transform", d => `rotate(${(d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90}) translate(${this.outerRadius - 50},0)`);
+      cell_relations.forEach(function(relation){
 
-        svg.append("g")
-            .attr("fill-opacity", 0.67)
-            .selectAll("path")
-            .data(chords)
-            .enter()
-            .append("path") 
-            .attr('opacity',0.8)
-            .attr("d", this.ribbon)
-            .attr("fill", d => d3.rgb(this.color(d.target.index)))
-            .attr("stroke", d => d3.rgb(this.color(d.target.index)))
-            .attr('stroke-width', 0)
+        let source = relation.source
 
-        groupName
-            .append("text")
-            .attr("x", 8)
-            .attr("dy", ".35em")
-            .attr("text-anchor", "end")
-            .attr('fill','black')
-            .attr('font-size', 20)
-            .text(d => 'Topic ' + d.index)
+        let target = relation.target
+
+        if (cell_dict[source.code] == undefined){
+          cell_dict[source.code] = source
+        }
+        if (cell_dict[target.code] == undefined){
+          cell_dict[target.code] = target
+        }
+      })
+
+      let cell_list = []
+      let hullData = []
+
+      for(let cell in cell_dict){
+
+        cell_list.push(cell_dict[cell])
+        //hullData.push([cell_dict[cell].pos.x, cell_dict[cell].pos.y/10 + 100])
+      }
+
+      let yMin = d3.min(cell_list, d => d.pos.y)
+      let yMax = d3.max(cell_list, d => d.pos.y)
+
+      let cell_position_assigner = {}
+
+      cell_list.forEach(function(d){
+
+        let y = (d.pos.y - yMin) / (yMax - yMin) * 180 + 20
+
+        hullData.push([d.pos.x, y])
+
+        d.pos.y = y
+
+        cell_position_assigner[d.code] = d.pos 
+      })
+
+      let relation_lines = []
+
+      cell_relations.forEach(function(d){
+
+        //console.log(d.source)
+
+        if(cell_position_assigner[d.source.code] && cell_position_assigner[d.target.code]){
+
+          let source_pos = cell_position_assigner[d.source.code]
+          let target_pos = cell_position_assigner[d.target.code]
+
+          let link = {'source': source_pos, 'target': target_pos, 'count': d.count}
+          relation_lines.push(link)
+        }
+        
+      })
+
+      let area = d3.polygonHull(hullData)
+
+      svg
+      .append("path")
+      .datum(area)
+      .style("fill", "white")
+      .style("stroke", "white")
+      .style("stroke-width", "20")
+      .style("opacity", "0.2")
+      .attr('d', d => "M" + d.join("L") + "Z")
+
+      let cell_points = svg.append('g')
+      .selectAll('.point')
+      .data(cell_list)
+      .enter()
+      .append('circle')
+      .attr('opacity', 0.5)
+      .attr('fill','red')
+      .attr('cx', d => d.pos.x)
+      .attr('cy', d => d.pos.y)
+      .attr('r', 5)
+
+      let selected = []
+
+      let candidates = []
+
+      cell_list.forEach(function(d){
+
+        candidates.push(d)
+      })
+
+      candidates.forEach(function(d){
+
+        if(selected.length == 0){
+          selected.push(d)
+        }
+        else{
+
+          let label = true
+
+          selected.forEach(function(q){
+
+            let dis = (q.pos.x - d.pos.x) * (q.pos.x - d.pos.x) + (q.pos.y - d.pos.y) * (q.pos.y - d.pos.y)
+
+            if(q.name.split('_').length > 1){
+
+              q.name = q.name.split('_')[1]
+            }
+
+            if(q.name.split('-').length > 1){
+
+              q.name = q.name.split('-')[0]
+            }
+
+            if(dis < 1000) label = false
+            
+          })
+
+          if(label)
+            selected.push(d)
+        }
+      })
+
+      let cell_name = svg.append('g')
+      .selectAll('.name')
+      .data(selected)
+      .enter()
+      .append('text')
+      .attr('x', d => d.pos.x)
+      .attr('y', d => d.pos.y)
+      .attr('fill', 'white')
+      .text(d => d.name)
+      .attr('font-size', 12)
+
+      let relation_links = svg.append('g')
+      .selectAll('.link')
+      .data(relation_lines)
+      .enter()
+      .append('line')
+      .attr('x1', d => d.source.x)
+      .attr('x2', d => d.target.x)
+      .attr('y1', d => d.source.y)
+      .attr('y2', d => d.target.y)
+      .attr('stroke-width', d => Math.sqrt(d.count) / 10)
+      .attr('stroke', 'white')
+      .attr('opacity', '0.7')
+
     }
   },
   mounted(){
 
     d3.select('#' + 'chord-view-container')
       .style('position', 'absolute')
-      .style('top', '70px')
-      .style('right', '30px')
 
-    this.width = 640
-    this.height = 640
+    this.width = 1580
+    this.height = 300
 
-    this.outerRadius = Math.min(this.width, this.height) * 0.5 - 30
-    this.innerRadius = this.outerRadius - 20
-
-    this.formatValue = d3.formatPrefix(",.0", 1e3)
-
-    this.chord = d3.chord()
-    .padAngle(0.05)
-    .sortSubgroups(d3.descending)
-
-    this.arc = d3.arc()
-    .innerRadius(this.innerRadius)
-    .outerRadius(this.outerRadius)
-
-    this.ribbon = d3.ribbon()
-    .radius(this.innerRadius)
-
-    this.color = d3.scaleOrdinal()
-    .domain(d3.range(6))    
-    .range(["#FF6600","#FFD443", "#FF6361", "#484C7F", "#BABEEA", "#E2ECF2"])
-
-    this.groupTicks = function(d, step) {
-        const k = (d.endAngle - d.startAngle) / d.value;
-        return d3.range(0, d.value, step).map(value => {
-            return {value: value, angle: value * k + d.startAngle};
-        });
-    }
-
-    for(let i=0;i<this.lineData.length;i+=1){
-
-        for(let j=0;j<this.lineData[i].length;j+=1){
-
-            if (this.lineData[i][j] != 0)
-              this.lineData[i][j] = Math.pow(Math.pow(Math.E, this.lineData[i][j]), 0.7)
-        }
-    }
-    
-    this.chartInit()
+    this.$root.$on('updateDynamicCells', cells => {
+      this.chartInit(cells)
+    })
+ 
   },
 }
 </script>
 
 <style scoped>
 #chord-view-container{
-  width:90%;
-  height:600px;
+  width:75%;
+  height:300px;
+  bottom: 0px;
+  left: 0px;
 }
 
 .name{
   border-left: lightsalmon solid 3px;
-  color:black;
-  padding-left:10px;
-  margin-right: 20px;
-  right:0px;
-  float: right;
+  color:white;
+  padding-left: 10px;
+  margin-left: 50px;
+  float: left;
 }
 
 </style>

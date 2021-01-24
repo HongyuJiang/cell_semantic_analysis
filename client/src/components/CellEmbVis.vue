@@ -196,7 +196,7 @@ export default {
 
             let yScale = d3.scaleLinear().domain([1,24]).range([0,200])
 
-            const yAxisContainer = sticksGroup.append("g")
+            const yAxisContainer = sticksGraph1.append("g")
             .attr("transform", `translate( ` + -40 + `,0)`);
 
             const yAxis = d3.axisLeft(yScale)
