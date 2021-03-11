@@ -74,8 +74,6 @@ export default {
 
       cell_relations.forEach(function(d){
 
-        //console.log(d.source)
-
         if(cell_position_assigner[d.source.code] && cell_position_assigner[d.target.code]){
 
           let source_pos = cell_position_assigner[d.source.code]
@@ -97,17 +95,6 @@ export default {
       .style("stroke-width", "20")
       .style("opacity", "0.2")
       .attr('d', d => "M" + d.join("L") + "Z")
-
-      let cell_points = svg.append('g')
-      .selectAll('.point')
-      .data(cell_list)
-      .enter()
-      .append('circle')
-      .attr('opacity', 0.5)
-      .attr('fill','red')
-      .attr('cx', d => d.pos.x)
-      .attr('cy', d => d.pos.y)
-      .attr('r', 5)
 
       let selected = []
 
@@ -155,8 +142,8 @@ export default {
       .data(selected)
       .enter()
       .append('text')
-      .attr('x', d => d.pos.x)
-      .attr('y', d => d.pos.y)
+      .attr('x', d => d.pos.x + 5)
+      .attr('y', d => d.pos.y + 15)
       .attr('fill', 'white')
       .text(d => d.name)
       .attr('font-size', 12)
@@ -172,7 +159,19 @@ export default {
       .attr('y2', d => d.target.y)
       .attr('stroke-width', d => Math.sqrt(d.count) / 10)
       .attr('stroke', 'white')
-      .attr('opacity', '0.7')
+      .attr('opacity', '0.3')
+
+      let cell_points = svg.append('g')
+      .selectAll('.point')
+      .data(cell_list)
+      .enter()
+      .append('circle')
+      .attr('opacity', 0.5)
+      .attr('fill','red')
+      .attr('cx', d => d.pos.x)
+      .attr('cy', d => d.pos.y)
+      .attr('r', 5)
+
 
     }
   },
