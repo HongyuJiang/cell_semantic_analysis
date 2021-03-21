@@ -52,11 +52,8 @@ export default {
       })
 
         let mat_data = intergrated_rect
-
-        let data_max = 0
         let data_min = 0
-
-        data_max = d3.max(mat_data, d => d3.max(d))
+        let data_max = d3.max(mat_data, d => d3.max(d))
 
         let heatScale = d3.scaleLinear().domain([data_min, data_max]).range([1,0])
 

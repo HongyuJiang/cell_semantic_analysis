@@ -271,6 +271,8 @@ export default {
           
             $.post('http://localhost:4000/users/', JSON.stringify({'persons': selected_persons_dict}))
                .done(function( data ) {
+
+                   console.log(data)
             });
 
             that.$root.$emit('updateMapTopic', cell_counter) 

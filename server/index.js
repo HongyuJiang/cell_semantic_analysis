@@ -37,7 +37,6 @@ app.post('/users', (req, res) => {
           //console.log("arr",arr)
 
           ret_data = arr[0]
-          //console.log("ret_data",ret_data)
           focused_persons = ret_data
 
           res.sendStatus(200)//不返回数据 发送状态码200表示收到
