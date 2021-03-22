@@ -103,20 +103,6 @@ export default {
             .attr('fill','grey')
         })
        
-        button.append('rect')
-        .attr('width', 60)
-        .attr('height', 20)
-        .attr('rx', 10)
-        .attr('ry', 10)
-        .attr('fill','black')
-       
-        button.append('text')
-        .attr('fill', 'white')
-        .text('confirm')
-        .attr('y',15)
-        .attr('x',8)
-        .attr('font-size', 14)
-       
         svg.selectAll('points')
         .data(data)
         .enter()

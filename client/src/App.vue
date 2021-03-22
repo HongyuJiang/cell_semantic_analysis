@@ -37,10 +37,6 @@ import ChordView from './components/SyouChordView';
 import MatView from './components/SyouMatView';
 import UserEmbVis from './components/UserEmbVis';
 import CellEmbVis from './components/CellEmbVis';
-import TopicView from './components/SyouTopicView';
-import CellList from './components/SyouCellList';
-import DataProvider from './DataProvider';
-import SyouChordView from './components/SyouChordView.vue';
 
 export default {
   name: 'App',
